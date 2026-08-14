@@ -1,7 +1,9 @@
 import { Badge } from "@astryxdesign/core/Badge";
 import { HStack, VStack } from "@astryxdesign/core/Layout";
+import { Link } from "@astryxdesign/core/Link";
 import { Heading, Text } from "@astryxdesign/core/Text";
 import { ProblemBrowser, type ProblemSummary } from "@/components/ProblemBrowser";
+import { weekOfProblem } from "@/lib/curriculum";
 import { allTags, problems } from "@/lib/problems";
 
 // Only the list-facing fields cross to the client — descriptions, test cases
@@ -12,6 +14,7 @@ const items: ProblemSummary[] = problems.map((p) => ({
   difficulty: p.difficulty,
   tags: p.tags,
   summary: p.summary,
+  week: weekOfProblem(p.slug)?.week,
 }));
 
 export default function Home() {
@@ -22,10 +25,11 @@ export default function Home() {
           <HStack>
             <Badge label="설치 없이 브라우저에서 바로 채점" variant="teal" />
           </HStack>
-          <Heading level={1}>코딩테스트, 매일 한 문제씩 훈련하세요</Heading>
+          <Heading level={1}>문제 전체</Heading>
           <Text color="secondary" textWrap="pretty">
-            JavaScript와 Python 코드를 브라우저 안에서 실행하고 테스트 케이스로
-            채점합니다. 로그인도, 서버도 필요 없습니다.
+            <Link href="/curriculum">24주 커리큘럼</Link> 순서로 정렬돼 있습니다.
+            개념부터 익히려면 주차별로 보는 편이 낫습니다. JavaScript와 Python
+            코드는 브라우저 안에서 실행되고 채점됩니다.
           </Text>
         </VStack>
 

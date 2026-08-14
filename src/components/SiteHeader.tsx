@@ -24,7 +24,13 @@ export function SiteHeader() {
         </Link>
       }
       endContent={
-        <HStack gap={3} align="center">
+        <HStack gap={4} align="center">
+          <Link href="/curriculum" isStandalone>
+            커리큘럼
+          </Link>
+          <Link href="/" isStandalone>
+            문제
+          </Link>
           <Link href={REPO_URL} isExternalLink isStandalone>
             GitHub
           </Link>

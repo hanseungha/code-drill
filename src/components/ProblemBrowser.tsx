@@ -25,6 +25,8 @@ export interface ProblemSummary {
   difficulty: Difficulty;
   tags: string[];
   summary: string;
+  /** Curriculum week, absent only if a problem is not scheduled yet. */
+  week?: number;
 }
 
 type DifficultyFilter = Difficulty | "all";
@@ -195,6 +197,11 @@ export function ProblemBrowser({
                 }
                 endContent={
                   <HStack gap={1.5} align="center">
+                    {/* The list is in curriculum order, so the week explains
+                        why an easy problem can follow a harder one. */}
+                    {p.week !== undefined && (
+                      <Token label={`${p.week}주차`} size="sm" color="blue" />
+                    )}
                     {p.tags.map((t) => (
                       <Token key={t} label={t} size="sm" />
                     ))}
