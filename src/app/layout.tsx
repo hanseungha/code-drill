@@ -65,7 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 문제
               </Link>
               <a
-                href="https://github.com/windown99/code-drill"
+                href="https://github.com/hanseungha/code-drill"
                 target="_blank"
                 rel="noreferrer"
                 className="rounded-md px-3 py-1.5 text-muted transition hover:bg-elevated hover:text-ink"
