@@ -54,14 +54,19 @@ npm run verify   # 모든 모범 답안을 실제 채점기로 검증
 
 `npm run verify`는 브라우저에 배포되는 워커 코드를 그대로 사용합니다.
 `js-runner.js`는 `node:vm`에서, `py-runner.js`의 파이썬 하네스는 로컬
-`python3`에서 실행해 10개 문제 × 2개 언어의 모든 테스트 케이스를 확인합니다.
+`python3`에서 실행해 모든 문제 × 2개 언어의 테스트 케이스를 확인합니다.
 문제를 추가한 뒤에는 반드시 돌려보세요 — 기댓값 오타를 여기서 잡습니다.
+
+## 학습 과정
+
+문제 목록은 [24주 커리큘럼](docs/curriculum.md)을 따릅니다. 개념을 먼저 익히고
+그 주의 문제 4개로 굳히는 구성이고, 난이도는 1주차부터 24주차까지 올라갑니다.
+`src/lib/problems/index.ts` 의 배열 순서가 곧 커리큘럼 순서입니다.
 
 ## 문제 추가하기
 
 1. `src/lib/problems/<slug>.ts` 를 만들고 `Problem` 타입에 맞춰 작성합니다.
-2. `src/lib/problems/index.ts` 의 `problems` 배열에 추가합니다. 배열 순서가 곧
-   목록에 보이는 순서이므로 난이도순으로 넣으면 학습 경로가 됩니다.
+2. `src/lib/problems/index.ts` 의 `problems` 배열에 해당 주차 위치로 넣습니다.
 3. `npm run verify` 로 모범 답안이 통과하는지 확인합니다.
 
 핵심 필드만 추리면 이렇습니다.
@@ -85,6 +90,29 @@ export const myProblem: Problem = {
 - `exact` (기본값) — 순서까지 일치해야 함
 - `unordered` — 최상위 배열의 순서를 무시
 - `unordered-deep` — 중첩된 모든 배열의 순서를 무시 (예: 애너그램 묶기)
+
+### 트리를 다루는 문제
+
+테스트 케이스는 JSON이어야 합니다. 같은 케이스가 두 채점기를 함께 돌아야 하고,
+Python 쪽은 `json.loads` 로 받기 때문입니다. 트리에는 JSON 표현이 없으므로
+**레벨 순서 배열로 쓰고 채점기가 호출 직전에 노드로 되살립니다.**
+
+```ts
+argShapes: ["tree"],   // 이 자리 인자를 노드로 바꿔서 넘김
+returnShape: "tree",   // 반환한 노드를 다시 레벨 순서 배열로 직렬화
+testCases: [
+  { input: [[3, 9, 20, null, null, 15, 7]], expected: 3 },
+],
+```
+
+`null` 은 자식이 없다는 뜻이고 뒤쪽 `null` 은 생략합니다. `TreeNode` 는 두 언어
+모두 전역으로 제공되므로 제출 코드에서 새 노드를 만들 수 있습니다.
+
+### JavaScript 힙
+
+Python은 `heapq` 가 내장이지만 JavaScript에는 내장 힙이 없습니다. 19주차 1번
+문제에서 한 번 직접 만들고, 그 이후 문제부터는 `snippets.ts` 의 `MIN_HEAP_JS` 를
+`withMinHeap()` 으로 스타터에 붙여 제공합니다.
 
 ## 구조
 
