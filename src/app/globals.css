@@ -1,73 +1,58 @@
-@import "tailwindcss";
+/*
+ * Layer order is the whole game here: Tailwind's reset must not win over
+ * Astryx's, and the theme's token overrides must land after the component
+ * styles they modify. This is the order Astryx documents for Tailwind projects.
+ */
+@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;
 
-@theme {
-  --color-canvas: #0a0c10;
-  --color-surface: #11141a;
-  --color-elevated: #171b22;
-  --color-line: #232935;
-  --color-line-strong: #313949;
-  --color-ink: #e7eaf0;
-  --color-muted: #8f99a9;
-  --color-faint: #616b7d;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
 
-  --color-brand: #2dd4bf;
-  --color-brand-dim: #0f766e;
+@import "@astryxdesign/core/reset.css";
+@import "@astryxdesign/core/astryx.css";
 
-  --color-easy: #4ade80;
-  --color-medium: #fbbf24;
-  --color-hard: #f87171;
+/*
+ * Our built brand theme. Generated from src/theme/codeDrill.ts by
+ * `npm run theme` — edit the source, never this file. It already contains the
+ * inherited neutral tokens, so theme-neutral/theme.css is not imported.
+ */
+@import "../theme/code-drill.css";
 
-  --color-pass: #4ade80;
-  --color-fail: #f87171;
+/* Maps Astryx tokens onto Tailwind utilities: bg-card, text-primary, rounded-lg… */
+@import "@astryxdesign/core/tailwind-theme.css";
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
-}
+@import "tailwindcss/utilities.css" layer(utilities);
 
-:root {
-  color-scheme: dark;
-}
+/*
+ * Slim scrollbars for the workspace panes. Token-backed so they follow the
+ * active theme and color mode.
+ */
+@layer components {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-emphasized) transparent;
+  }
 
-html,
-body {
-  background: var(--color-canvas);
-  color: var(--color-ink);
-}
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
 
-body {
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-}
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-border-emphasized);
+    border-radius: var(--radius-full);
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
 
-::selection {
-  background: color-mix(in oklab, var(--color-brand) 30%, transparent);
-}
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-disabled);
+    background-clip: content-box;
+  }
 
-/* Slim scrollbars so the split panes don't feel chunky. */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-line-strong) transparent;
-}
-
-*::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: var(--color-line-strong);
-  border-radius: 999px;
-  border: 3px solid transparent;
-  background-clip: content-box;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: var(--color-faint);
-  background-clip: content-box;
-}
-
-*::-webkit-scrollbar-track {
-  background: transparent;
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -12,7 +12,7 @@ export function RichText({ text }: { text: string }) {
         part.length > 2 && part.startsWith("`") && part.endsWith("`") ? (
           <code
             key={i}
-            className="rounded bg-elevated px-1.5 py-0.5 font-mono text-[0.9em] text-brand ring-1 ring-line"
+            className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.9em] text-accent ring-1 ring-border"
           >
             {part.slice(1, -1)}
           </code>

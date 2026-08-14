@@ -140,7 +140,7 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
 
   return (
     <main className="flex h-[calc(100dvh-3.5rem)] flex-col">
-      <div className="flex shrink-0 items-center gap-1 border-b border-line bg-surface px-3 py-1.5 lg:hidden">
+      <div className="flex shrink-0 items-center gap-1 border-b border-border bg-card px-3 py-1.5 lg:hidden">
         {(["problem", "code"] as MobileView[]).map((v) => (
           <button
             key={v}
@@ -148,7 +148,7 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
             onClick={() => setView(v)}
             aria-pressed={view === v}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
-              view === v ? "bg-elevated text-ink" : "text-muted"
+              view === v ? "bg-muted text-primary" : "text-secondary"
             }`}
           >
             {v === "problem" ? "문제" : "코드"}
@@ -158,7 +158,7 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
 
       <div ref={columnsRef} className="flex min-h-0 flex-1 lg:flex-row">
         <section
-          className={`min-h-0 min-w-0 flex-1 border-line lg:flex-none lg:border-r ${
+          className={`min-h-0 min-w-0 flex-1 border-border lg:flex-none lg:border-r ${
             view === "problem" ? "" : "hidden lg:block"
           }`}
           style={{ flexBasis: `${problemWidth}%` }}
@@ -179,7 +179,7 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
           tabIndex={0}
           onPointerDown={startColumnDrag}
           onKeyDown={onColumnDragKey}
-          className="hidden w-1 shrink-0 cursor-col-resize bg-line transition hover:bg-brand/50 focus-visible:bg-brand focus-visible:outline-none lg:block"
+          className="hidden w-1 shrink-0 cursor-col-resize bg-border transition hover:bg-accent/50 focus-visible:bg-accent focus-visible:outline-none lg:block"
         />
 
         <section
@@ -187,8 +187,8 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
             view === "code" ? "" : "hidden lg:flex"
           }`}
         >
-          <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-line bg-surface px-3 py-2">
-            <div className="flex gap-0.5 rounded-lg bg-elevated p-0.5">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-card px-3 py-2">
+            <div className="flex gap-0.5 rounded-lg bg-muted p-0.5">
               {LANGUAGES.map((lang) => (
                 <button
                   key={lang}
@@ -197,8 +197,8 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
                   aria-pressed={language === lang}
                   className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
                     language === lang
-                      ? "bg-canvas text-ink shadow-sm"
-                      : "text-muted hover:text-ink"
+                      ? "bg-body text-primary shadow-sm"
+                      : "text-secondary hover:text-primary"
                   }`}
                 >
                   {LANGUAGE_LABEL[lang]}
@@ -209,7 +209,7 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
             <button
               type="button"
               onClick={resetCode}
-              className="rounded-md px-2 py-1 text-xs text-faint transition hover:bg-elevated hover:text-muted"
+              className="rounded-md px-2 py-1 text-xs text-disabled transition hover:bg-muted hover:text-secondary"
             >
               초기화
             </button>
@@ -219,7 +219,7 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
                 type="button"
                 onClick={() => void run("run")}
                 disabled={running !== null}
-                className="rounded-lg border border-line bg-elevated px-3 py-1.5 text-xs font-medium transition hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-border bg-muted px-3 py-1.5 text-xs font-medium transition hover:border-strong disabled:cursor-not-allowed disabled:opacity-50"
               >
                 실행
               </button>
@@ -227,7 +227,7 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
                 type="button"
                 onClick={() => void run("submit")}
                 disabled={running !== null}
-                className="rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-canvas transition hover:bg-brand/85 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg bg-accent px-3.5 py-1.5 text-xs font-semibold text-on-accent transition hover:bg-accent/85 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 제출
               </button>
@@ -236,7 +236,7 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
 
           <div ref={rowsRef} className="flex min-h-0 flex-1 flex-col">
             <div
-              className="min-h-0 overflow-hidden bg-surface"
+              className="min-h-0 overflow-hidden bg-card"
               style={{ flexBasis: `${editorHeight}%`, flexGrow: 0, flexShrink: 1 }}
             >
               <CodeEditor language={language} value={code} onChange={setCode} />
@@ -249,10 +249,10 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
               tabIndex={0}
               onPointerDown={startRowDrag}
               onKeyDown={onRowDragKey}
-              className="h-1 shrink-0 cursor-row-resize bg-line transition hover:bg-brand/50 focus-visible:bg-brand focus-visible:outline-none"
+              className="h-1 shrink-0 cursor-row-resize bg-border transition hover:bg-accent/50 focus-visible:bg-accent focus-visible:outline-none"
             />
 
-            <div className="min-h-0 flex-1 overflow-hidden border-t border-line bg-canvas">
+            <div className="min-h-0 flex-1 overflow-hidden border-t border-border bg-body">
               <ResultPanel outcome={outcome} running={running} stage={stage} />
             </div>
           </div>

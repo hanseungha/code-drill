@@ -1,9 +1,10 @@
 import { DIFFICULTY_LABEL, type Difficulty } from "@/lib/types";
 
 const STYLES: Record<Difficulty, string> = {
-  easy: "bg-easy/10 text-easy ring-easy/25",
-  medium: "bg-medium/10 text-medium ring-medium/25",
-  hard: "bg-hard/10 text-hard ring-hard/25",
+  // The -subtle tokens already carry their own alpha, so no opacity modifier.
+  easy: "bg-green-subtle text-green-vivid ring-green-ring/40",
+  medium: "bg-yellow-subtle text-yellow-vivid ring-yellow-ring/40",
+  hard: "bg-red-subtle text-red-vivid ring-red-ring/40",
 };
 
 export function DifficultyBadge({

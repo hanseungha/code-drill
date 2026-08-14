@@ -51,17 +51,17 @@ export function ProblemBrowser({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-line bg-surface p-4">
+      <div className="rounded-xl border border-border bg-card p-4">
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="text-sm font-medium text-muted">진행률</h2>
+          <h2 className="text-sm font-medium text-secondary">진행률</h2>
           <p className="font-mono text-sm">
-            <span className="text-ink">{solvedCount}</span>
-            <span className="text-faint"> / {items.length}</span>
-            <span className="ml-2 text-brand">{percent}%</span>
+            <span className="text-primary">{solvedCount}</span>
+            <span className="text-disabled"> / {items.length}</span>
+            <span className="ml-2 text-accent">{percent}%</span>
           </p>
         </div>
         <div
-          className="mt-3 h-1.5 overflow-hidden rounded-full bg-elevated"
+          className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"
           role="progressbar"
           aria-valuenow={solvedCount}
           aria-valuemin={0}
@@ -69,7 +69,7 @@ export function ProblemBrowser({
           aria-label="푼 문제 수"
         >
           <div
-            className="h-full rounded-full bg-brand transition-[width] duration-500"
+            className="h-full rounded-full bg-accent transition-[width] duration-500"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -81,7 +81,7 @@ export function ProblemBrowser({
                 resetProgress();
               }
             }}
-            className="mt-3 text-xs text-faint underline-offset-2 transition hover:text-muted hover:underline"
+            className="mt-3 text-xs text-disabled underline-offset-2 transition hover:text-secondary hover:underline"
           >
             기록 초기화
           </button>
@@ -95,7 +95,7 @@ export function ProblemBrowser({
             <svg
               viewBox="0 0 24 24"
               aria-hidden
-              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint"
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-disabled"
               fill="none"
             >
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
@@ -105,11 +105,11 @@ export function ProblemBrowser({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="문제 이름 또는 유형 검색"
-              className="w-full rounded-lg border border-line bg-surface py-2 pl-9 pr-3 text-sm outline-none transition placeholder:text-faint focus:border-brand/50 focus:ring-2 focus:ring-brand/20"
+              className="w-full rounded-lg border border-border bg-card py-2 pl-9 pr-3 text-sm outline-none transition placeholder:text-disabled focus:border-accent/50 focus:ring-2 focus:ring-accent/20"
             />
           </label>
 
-          <div className="flex gap-1 rounded-lg border border-line bg-surface p-1">
+          <div className="flex gap-1 rounded-lg border border-border bg-card p-1">
             {(["all", ...DIFFICULTIES] as DifficultyFilter[]).map((d) => (
               <button
                 key={d}
@@ -118,8 +118,8 @@ export function ProblemBrowser({
                 aria-pressed={difficulty === d}
                 className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
                   difficulty === d
-                    ? "bg-elevated text-ink"
-                    : "text-muted hover:text-ink"
+                    ? "bg-muted text-primary"
+                    : "text-secondary hover:text-primary"
                 }`}
               >
                 {d === "all" ? "전체" : DIFFICULTY_LABEL[d]}
@@ -127,12 +127,12 @@ export function ProblemBrowser({
             ))}
           </div>
 
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-xs text-muted transition hover:text-ink">
+          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs text-secondary transition hover:text-primary">
             <input
               type="checkbox"
               checked={hideSolved}
               onChange={(e) => setHideSolved(e.target.checked)}
-              className="size-3.5 accent-[var(--color-brand)]"
+              className="size-3.5 accent-[var(--color-accent)]"
             />
             푼 문제 숨기기
           </label>
@@ -145,8 +145,8 @@ export function ProblemBrowser({
             aria-pressed={tag === null}
             className={`rounded-full px-2.5 py-1 text-xs transition ${
               tag === null
-                ? "bg-brand/15 text-brand ring-1 ring-brand/30"
-                : "bg-surface text-muted ring-1 ring-line hover:text-ink"
+                ? "bg-accent/15 text-accent ring-1 ring-accent/30"
+                : "bg-card text-secondary ring-1 ring-border hover:text-primary"
             }`}
           >
             모든 유형
@@ -159,8 +159,8 @@ export function ProblemBrowser({
               aria-pressed={tag === t}
               className={`rounded-full px-2.5 py-1 text-xs transition ${
                 tag === t
-                  ? "bg-brand/15 text-brand ring-1 ring-brand/30"
-                  : "bg-surface text-muted ring-1 ring-line hover:text-ink"
+                  ? "bg-accent/15 text-accent ring-1 ring-accent/30"
+                  : "bg-card text-secondary ring-1 ring-border hover:text-primary"
               }`}
             >
               {t}
@@ -170,25 +170,25 @@ export function ProblemBrowser({
       </div>
 
       {visible.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-line py-16 text-center text-sm text-faint">
+        <p className="rounded-xl border border-dashed border-border py-16 text-center text-sm text-disabled">
           조건에 맞는 문제가 없습니다.
         </p>
       ) : (
-        <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+        <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
           {visible.map((p, i) => {
             const isSolved = solved.has(p.slug);
             return (
               <li key={p.slug}>
                 <Link
                   href={`/problems/${p.slug}`}
-                  className="group flex items-center gap-4 px-4 py-3.5 transition hover:bg-elevated"
+                  className="group flex items-center gap-4 px-4 py-3.5 transition hover:bg-muted"
                 >
                   <span
                     aria-hidden
                     className={`grid size-6 shrink-0 place-items-center rounded-full text-[11px] font-medium ${
                       isSolved
-                        ? "bg-pass/15 text-pass ring-1 ring-pass/30"
-                        : "bg-elevated text-faint ring-1 ring-line"
+                        ? "bg-success/15 text-success ring-1 ring-success/30"
+                        : "bg-muted text-disabled ring-1 ring-border"
                     }`}
                   >
                     {isSolved ? (
@@ -208,14 +208,14 @@ export function ProblemBrowser({
 
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2">
-                      <span className="truncate font-medium transition group-hover:text-brand">
+                      <span className="truncate font-medium transition group-hover:text-accent">
                         {p.title}
                       </span>
                       {isSolved && (
                         <span className="sr-only">푼 문제</span>
                       )}
                     </span>
-                    <span className="mt-0.5 block truncate text-sm text-faint">
+                    <span className="mt-0.5 block truncate text-sm text-disabled">
                       {p.summary}
                     </span>
                   </span>
@@ -224,7 +224,7 @@ export function ProblemBrowser({
                     {p.tags.map((t) => (
                       <span
                         key={t}
-                        className="rounded bg-elevated px-1.5 py-0.5 text-[11px] text-muted"
+                        className="rounded bg-muted px-1.5 py-0.5 text-[11px] text-secondary"
                       >
                         {t}
                       </span>

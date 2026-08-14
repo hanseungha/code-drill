@@ -21,7 +21,7 @@ export function ResultPanel({
   if (running) {
     return (
       <Centered>
-        <span className="inline-flex items-center gap-2.5 text-sm text-muted">
+        <span className="inline-flex items-center gap-2.5 text-sm text-secondary">
           <Spinner />
           {STAGE_LABEL[stage]}
         </span>
@@ -32,7 +32,7 @@ export function ResultPanel({
   if (!outcome) {
     return (
       <Centered>
-        <p className="text-sm text-faint">
+        <p className="text-sm text-disabled">
           코드를 작성하고 <Kbd>실행</Kbd> 을 눌러 예시 테스트를 확인하세요.
         </p>
       </Centered>
@@ -42,9 +42,9 @@ export function ResultPanel({
   if (outcome.status === "fatal") {
     return (
       <div className="p-4">
-        <div className="rounded-lg border border-fail/30 bg-fail/5 p-3.5">
-          <p className="text-sm font-medium text-fail">실행 오류</p>
-          <pre className="mt-2 overflow-x-auto whitespace-pre-wrap font-mono text-[12.5px] leading-relaxed text-ink/85">
+        <div className="rounded-lg border border-error/30 bg-error/5 p-3.5">
+          <p className="text-sm font-medium text-error">실행 오류</p>
+          <pre className="mt-2 overflow-x-auto whitespace-pre-wrap font-mono text-[12.5px] leading-relaxed text-primary/85">
             {outcome.message}
           </pre>
         </div>
@@ -55,9 +55,9 @@ export function ResultPanel({
   if (outcome.status === "timeout") {
     return (
       <div className="p-4">
-        <div className="rounded-lg border border-medium/30 bg-medium/5 p-3.5">
-          <p className="text-sm font-medium text-medium">시간 초과</p>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-muted">
+        <div className="rounded-lg border border-yellow-ring/40 bg-yellow-subtle p-3.5">
+          <p className="text-sm font-medium text-yellow-vivid">시간 초과</p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-secondary">
             {outcome.completed === 0
               ? `테스트 1번에서 제한 시간을 넘겼습니다.`
               : `테스트 ${outcome.completed}개를 실행한 뒤 ${outcome.completed + 1}번에서 제한 시간을 넘겼습니다.`}{" "}
@@ -75,24 +75,24 @@ export function ResultPanel({
       <div
         className={`flex shrink-0 items-center gap-3 border-b px-4 py-2.5 ${
           allPassed
-            ? "border-pass/20 bg-pass/5"
-            : "border-fail/20 bg-fail/5"
+            ? "border-success/20 bg-success/5"
+            : "border-error/20 bg-error/5"
         }`}
       >
         <span
           className={`inline-flex items-center gap-1.5 text-sm font-semibold ${
-            allPassed ? "text-pass" : "text-fail"
+            allPassed ? "text-success" : "text-error"
           }`}
         >
           {allPassed ? <CheckIcon /> : <XIcon />}
           {allPassed ? "모든 테스트 통과" : "테스트 실패"}
         </span>
-        <span className="font-mono text-xs text-muted">
+        <span className="font-mono text-xs text-secondary">
           {outcome.passed} / {outcome.total}
         </span>
       </div>
 
-      <ul className="min-h-0 flex-1 divide-y divide-line overflow-y-auto">
+      <ul className="min-h-0 flex-1 divide-y divide-border overflow-y-auto">
         {outcome.results.map((result) => (
           <TestRow key={result.index} result={result} />
         ))}
@@ -107,18 +107,18 @@ function TestRow({ result }: { result: TestResult }) {
       <div className="flex items-center gap-2.5">
         <span
           className={`inline-flex items-center gap-1.5 text-[13px] font-medium ${
-            result.passed ? "text-pass" : "text-fail"
+            result.passed ? "text-success" : "text-error"
           }`}
         >
           {result.passed ? <CheckIcon /> : <XIcon />}
           테스트 {result.index + 1}
         </span>
         {result.hidden && (
-          <span className="rounded bg-elevated px-1.5 py-0.5 text-[11px] text-faint">
+          <span className="rounded bg-muted px-1.5 py-0.5 text-[11px] text-disabled">
             숨김
           </span>
         )}
-        <span className="ml-auto font-mono text-[11px] text-faint">
+        <span className="ml-auto font-mono text-[11px] text-disabled">
           {result.ms < 1 ? "<1" : Math.round(result.ms)}ms
         </span>
       </div>
@@ -142,17 +142,17 @@ function TestRow({ result }: { result: TestResult }) {
       )}
 
       {result.error && (
-        <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-md border border-fail/25 bg-fail/5 p-2.5 font-mono text-[12px] leading-relaxed text-hard">
+        <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-md border border-error/25 bg-error/5 p-2.5 font-mono text-[12px] leading-relaxed text-red-vivid">
           {result.error}
         </pre>
       )}
 
       {result.stdout.trim() && (
         <details className="mt-2">
-          <summary className="cursor-pointer text-[12px] text-faint transition hover:text-muted">
+          <summary className="cursor-pointer text-[12px] text-disabled transition hover:text-secondary">
             출력 보기
           </summary>
-          <pre className="mt-1.5 overflow-x-auto whitespace-pre-wrap rounded-md bg-elevated p-2.5 font-mono text-[12px] leading-relaxed text-muted">
+          <pre className="mt-1.5 overflow-x-auto whitespace-pre-wrap rounded-md bg-muted p-2.5 font-mono text-[12px] leading-relaxed text-secondary">
             {result.stdout}
           </pre>
         </details>
@@ -171,10 +171,10 @@ function Row({
   tone: "muted" | "pass" | "fail";
 }) {
   const color =
-    tone === "pass" ? "text-pass" : tone === "fail" ? "text-fail" : "text-ink/85";
+    tone === "pass" ? "text-success" : tone === "fail" ? "text-error" : "text-primary/85";
   return (
     <div className="flex gap-3">
-      <dt className="w-12 shrink-0 text-faint">{label}</dt>
+      <dt className="w-12 shrink-0 text-disabled">{label}</dt>
       <dd className={`min-w-0 flex-1 break-all ${color}`}>{value}</dd>
     </div>
   );
@@ -190,7 +190,7 @@ function Centered({ children }: { children: React.ReactNode }) {
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="rounded border border-line bg-elevated px-1.5 py-0.5 font-mono text-[11px] text-muted">
+    <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] text-secondary">
       {children}
     </kbd>
   );
@@ -198,7 +198,7 @@ function Kbd({ children }: { children: React.ReactNode }) {
 
 function Spinner() {
   return (
-    <svg viewBox="0 0 24 24" className="size-4 animate-spin text-brand" aria-hidden>
+    <svg viewBox="0 0 24 24" className="size-4 animate-spin text-accent" aria-hidden>
       <circle
         cx="12"
         cy="12"

@@ -7,15 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "theme": "astryx theme build src/theme/codeDrill.ts",
+    "theme:check": "astryx theme build src/theme/codeDrill.ts --check",
     "verify": "tsx scripts/verify-solutions.mts"
   },
   "dependencies": {
+    "@astryxdesign/core": "^0.4.0",
+    "@astryxdesign/theme-neutral": "^0.4.0",
     "@monaco-editor/react": "^4.7.0",
+    "@stylexjs/stylex": "^0.19.0",
     "next": "16.3.1",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@astryxdesign/cli": "^0.4.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

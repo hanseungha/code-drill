@@ -1,6 +1,7 @@
 "use client";
 
 import Editor, { type Monaco } from "@monaco-editor/react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Language } from "@/lib/types";
 
 const MONACO_LANGUAGE: Record<Language, string> = {
@@ -13,36 +14,149 @@ const TAB_SIZE: Record<Language, number> = {
   python: 4,
 };
 
-/** Matches the app palette so the editor doesn't read as a pasted-in widget. */
-function defineTheme(monaco: Monaco) {
-  monaco.editor.defineTheme("code-drill", {
-    base: "vs-dark",
+const THEME_NAME = "code-drill";
+
+/** Every token the Monaco theme is built from. */
+const TOKENS = [
+  "--color-background-card",
+  "--color-background-muted",
+  "--color-background-popover",
+  "--color-text-primary",
+  "--color-text-secondary",
+  "--color-text-disabled",
+  "--color-border",
+  "--color-border-emphasized",
+  "--color-accent",
+  "--color-accent-muted",
+  "--color-syntax-comment",
+  "--color-syntax-keyword",
+  "--color-syntax-string",
+  "--color-syntax-number",
+  "--color-syntax-type",
+  "--color-syntax-function",
+  "--color-syntax-variable",
+  "--color-syntax-operator",
+  "--color-syntax-punctuation",
+  "--color-syntax-constant",
+  "--color-syntax-property",
+  "--color-syntax-tag",
+] as const;
+
+type TokenName = (typeof TOKENS)[number];
+type Palette = Record<TokenName, string>;
+
+function channelToHex(value: number) {
+  return Math.round(value).toString(16).padStart(2, "0");
+}
+
+/** `rgb(1 2 3 / 0.5)` and `rgba(1,2,3,0.5)` both land as `#010203` + alpha. */
+function toHex(color: string): string {
+  const parts = color.match(/[\d.]+/g);
+  if (!parts || parts.length < 3) return "#000000";
+  const [r, g, b] = parts.map(Number);
+  const hex = `#${channelToHex(r)}${channelToHex(g)}${channelToHex(b)}`;
+  if (parts.length < 4) return hex;
+  const alpha = Math.round(Number(parts[3]) * 255);
+  return alpha >= 255 ? hex : `${hex}${channelToHex(alpha)}`;
+}
+
+/**
+ * Custom properties compute to their raw token stream, so reading
+ * `--color-accent` directly would hand back the literal `light-dark(a, b)`.
+ * Assigning it to a real `color` property forces the browser to resolve the
+ * active mode, and the computed value comes back as rgb().
+ */
+function readPalette(): Palette | null {
+  if (typeof document === "undefined") return null;
+  const probe = document.createElement("span");
+  probe.setAttribute("aria-hidden", "true");
+  probe.style.cssText = "position:absolute;opacity:0;pointer-events:none";
+  document.body.appendChild(probe);
+  const palette = {} as Palette;
+  try {
+    for (const token of TOKENS) {
+      probe.style.color = `var(${token})`;
+      palette[token] = toHex(getComputedStyle(probe).color);
+    }
+  } finally {
+    probe.remove();
+  }
+  return palette;
+}
+
+/** Relative luminance, to decide whether Monaco should inherit vs or vs-dark. */
+function isDark(hex: string) {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const lin = (c: number) =>
+    c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b) < 0.4;
+}
+
+/** Monaco wants hex without the leading '#' in rules, but with it in colors. */
+const bare = (hex: string) => hex.replace("#", "");
+
+function defineTheme(monaco: Monaco, palette: Palette) {
+  monaco.editor.defineTheme(THEME_NAME, {
+    base: isDark(palette["--color-background-card"]) ? "vs-dark" : "vs",
     inherit: true,
     rules: [
-      { token: "comment", foreground: "616b7d", fontStyle: "italic" },
-      { token: "keyword", foreground: "c4b5fd" },
-      { token: "string", foreground: "86efac" },
-      { token: "number", foreground: "fbbf24" },
-      { token: "type", foreground: "2dd4bf" },
-      { token: "delimiter", foreground: "8f99a9" },
+      { token: "", foreground: bare(palette["--color-syntax-variable"]) },
+      {
+        token: "comment",
+        foreground: bare(palette["--color-syntax-comment"]),
+        fontStyle: "italic",
+      },
+      { token: "keyword", foreground: bare(palette["--color-syntax-keyword"]) },
+      { token: "string", foreground: bare(palette["--color-syntax-string"]) },
+      { token: "number", foreground: bare(palette["--color-syntax-number"]) },
+      { token: "regexp", foreground: bare(palette["--color-syntax-string"]) },
+      { token: "type", foreground: bare(palette["--color-syntax-type"]) },
+      {
+        token: "identifier",
+        foreground: bare(palette["--color-syntax-variable"]),
+      },
+      {
+        token: "entity.name.function",
+        foreground: bare(palette["--color-syntax-function"]),
+      },
+      {
+        token: "constant",
+        foreground: bare(palette["--color-syntax-constant"]),
+      },
+      {
+        token: "attribute.name",
+        foreground: bare(palette["--color-syntax-property"]),
+      },
+      { token: "tag", foreground: bare(palette["--color-syntax-tag"]) },
+      {
+        token: "operator",
+        foreground: bare(palette["--color-syntax-operator"]),
+      },
+      {
+        token: "delimiter",
+        foreground: bare(palette["--color-syntax-punctuation"]),
+      },
     ],
     colors: {
-      "editor.background": "#11141a",
-      "editor.foreground": "#e7eaf0",
-      "editorLineNumber.foreground": "#3b4353",
-      "editorLineNumber.activeForeground": "#8f99a9",
-      "editor.lineHighlightBackground": "#171b22",
-      "editor.selectionBackground": "#2dd4bf33",
-      "editorCursor.foreground": "#2dd4bf",
-      "editorIndentGuide.background1": "#212630",
-      "editorIndentGuide.activeBackground1": "#313949",
-      "editorWidget.background": "#171b22",
-      "editorWidget.border": "#232935",
-      "editorSuggestWidget.background": "#171b22",
-      "editorSuggestWidget.border": "#232935",
-      "scrollbarSlider.background": "#31394980",
-      "scrollbarSlider.hoverBackground": "#313949cc",
-      "scrollbarSlider.activeBackground": "#616b7d",
+      "editor.background": palette["--color-background-card"],
+      "editor.foreground": palette["--color-text-primary"],
+      "editorLineNumber.foreground": palette["--color-text-disabled"],
+      "editorLineNumber.activeForeground": palette["--color-text-secondary"],
+      "editor.lineHighlightBackground": palette["--color-background-muted"],
+      "editor.selectionBackground": palette["--color-accent-muted"],
+      "editorCursor.foreground": palette["--color-accent"],
+      "editorIndentGuide.background1": palette["--color-border"],
+      "editorIndentGuide.activeBackground1":
+        palette["--color-border-emphasized"],
+      "editorWidget.background": palette["--color-background-popover"],
+      "editorWidget.border": palette["--color-border"],
+      "editorSuggestWidget.background": palette["--color-background-popover"],
+      "editorSuggestWidget.border": palette["--color-border"],
+      "scrollbarSlider.background": palette["--color-border"],
+      "scrollbarSlider.hoverBackground": palette["--color-border-emphasized"],
+      "scrollbarSlider.activeBackground": palette["--color-text-disabled"],
     },
   });
 }
@@ -56,19 +170,55 @@ export function CodeEditor({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const monacoRef = useRef<Monaco | null>(null);
+  const [, setRevision] = useState(0);
+
+  const retheme = useCallback(() => {
+    const monaco = monacoRef.current;
+    const palette = readPalette();
+    if (!monaco || !palette) return;
+    defineTheme(monaco, palette);
+    monaco.editor.setTheme(THEME_NAME);
+  }, []);
+
+  // The mode changes either because the OS preference flipped, or because the
+  // toggle set `data-theme` on <html>.
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    media.addEventListener("change", retheme);
+
+    const observer = new MutationObserver(retheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => {
+      media.removeEventListener("change", retheme);
+      observer.disconnect();
+    };
+  }, [retheme]);
+
+  const beforeMount = useCallback((monaco: Monaco) => {
+    monacoRef.current = monaco;
+    const palette = readPalette();
+    if (palette) defineTheme(monaco, palette);
+    setRevision((n) => n + 1);
+  }, []);
+
   return (
     <Editor
       language={MONACO_LANGUAGE[language]}
       value={value}
       onChange={(next) => onChange(next ?? "")}
-      beforeMount={defineTheme}
-      theme="code-drill"
+      beforeMount={beforeMount}
+      theme={THEME_NAME}
       loading={
-        <span className="text-sm text-faint">에디터를 불러오는 중…</span>
+        <span className="text-sm text-disabled">에디터를 불러오는 중…</span>
       }
       options={{
         fontSize: 13.5,
-        fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
+        fontFamily: "var(--font-family-code)",
         fontLigatures: true,
         lineHeight: 1.7,
         minimap: { enabled: false },
