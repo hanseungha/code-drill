@@ -7,6 +7,7 @@ import { Heading, Text } from "@astryxdesign/core/Text";
 import { Token } from "@astryxdesign/core/Token";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { BaekjoonList } from "@/components/BaekjoonList";
 import { ConceptNote } from "@/components/ConceptNote";
 import { PatternList } from "@/components/PatternList";
 import {
@@ -19,6 +20,7 @@ import {
   getWeek,
   weeks,
 } from "@/lib/curriculum";
+import { recommendedForWeek } from "@/lib/baekjoon";
 import { getProblem } from "@/lib/problems";
 
 export function generateStaticParams() {
@@ -112,6 +114,7 @@ export default async function WeekPage({ params }: PageProps<"/week/[n]">) {
             </Text>
           )}
           <WeekProblemList rows={rows} />
+          <BaekjoonList problems={recommendedForWeek(week.week)} />
         </VStack>
 
         <Divider />

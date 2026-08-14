@@ -51,6 +51,7 @@ npm run build
 npm run lint
 npm run verify   # 모든 모범 답안을 실제 채점기로 검증
 npm run docs     # docs/curriculum.md 의 주차 목록을 커리큘럼 데이터에서 다시 생성
+npm run baekjoon # 백준 추천 문제 목록을 다시 받아옴 (결과는 커밋되어 있음)
 ```
 
 `npm run verify`는 브라우저에 배포되는 워커 코드를 그대로 사용합니다.
@@ -65,7 +66,7 @@ npm run docs     # docs/curriculum.md 의 주차 목록을 커리큘럼 데이�
 굳힙니다. 난이도는 1주차부터 24주차까지 올라갑니다.
 
 - `/curriculum` — 4페이즈 24주 지도와 전체 진행률
-- `/week/[n]` — 개념 노트, 패턴 코드, 그 주의 문제, 셀프 체크
+- `/week/[n]` — 개념 노트, 패턴 코드, 그 주의 문제, 백준 추천 문제, 셀프 체크
 - `/` — 문제 전체 목록 (커리큘럼 순서)
 
 주차 콘텐츠는 `src/lib/curriculum/weeks/w01.ts` ~ `w24.ts` 에 있습니다. 개념은
@@ -74,6 +75,19 @@ npm run docs     # docs/curriculum.md 의 주차 목록을 커리큘럼 데이�
 
 커리큘럼이 가리키는 문제 slug가 실제로 존재하는지, 모든 문제가 정확히 한 주차에
 배치됐는지는 `npm run verify` 가 함께 검사합니다.
+
+### 백준 추천 문제
+
+주차마다 그 주제로 골라둔 백준 문제 목록이 접힌 채로 붙어 있습니다. 출처는
+[tony9402/baekjoon](https://github.com/tony9402/baekjoon)(MIT)이고, 저자가 추천으로
+표시한 **372문제**를 23개 분류 → 주차로 매핑해 가져옵니다.
+
+가져오는 것은 **목록뿐입니다** — 문제 번호, 제목, solved.ac 티어. 지문과 채점
+데이터는 그 저장소에 없고(표가 전부 acmicpc.net 링크입니다) 백준 저작물이라,
+이 사이트는 링크만 겁니다. 채점은 백준에서 하고 체크박스로 표시해 두는 방식입니다.
+
+분류 → 주차 매핑과 예외 목록은 `scripts/fetch-baekjoon.mts` 안에 있습니다.
+결과 JSON은 커밋되어 있어서 빌드나 요청 때 네트워크를 타지 않습니다.
 
 주차 구성을 바꿀 때는 `docs/curriculum.md` 의 **필수 주제 커버리지** 표를 먼저 보세요.
 코딩 테스트 필수 주제와 담당 주차의 대응표라서, 주차를 옮기다 주제가 통째로 빠지는
@@ -134,6 +148,7 @@ Python은 `heapq` 가 내장이지만 JavaScript에는 내장 힙이 없습니�
 
 ```
 src/lib/curriculum/   24주 커리큘럼 (한 파일에 한 주차)
+src/lib/baekjoon/     백준 추천 문제 목록 (생성물)
 src/lib/problems/     문제 정의 (한 파일에 한 문제)
 src/lib/runner.ts     워커 수명 관리, 제한 시간, 결과 매핑
 src/lib/compare.ts    정답 비교 및 정규화

@@ -10,7 +10,8 @@
     "theme": "astryx theme build src/theme/codeDrill.ts",
     "theme:check": "astryx theme build src/theme/codeDrill.ts --check",
     "verify": "tsx scripts/verify-solutions.mts",
-    "docs": "tsx scripts/gen-curriculum-doc.mts"
+    "docs": "tsx scripts/gen-curriculum-doc.mts",
+    "baekjoon": "tsx scripts/fetch-baekjoon.mts"
   },
   "dependencies": {
     "@astryxdesign/core": "^0.4.0",
