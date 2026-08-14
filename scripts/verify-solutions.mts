@@ -13,6 +13,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createContext, runInContext } from "node:vm";
 import { display, displayArgs, matches } from "../src/lib/compare";
+import { weeks, writtenSlugs } from "../src/lib/curriculum";
 import { problems } from "../src/lib/problems";
 import { LANGUAGES, type Language, type Problem } from "../src/lib/types";
 
@@ -172,10 +173,47 @@ function check(problem: Problem, language: Language, outcomes: Outcome[]): Failu
   return failures;
 }
 
+/* --------------------------------- curriculum ------------------------------- */
+
+/**
+ * The curriculum references problems by slug, so a typo or a renamed problem
+ * would only surface as an empty week in the browser. Checked here instead.
+ */
+function checkCurriculum(): string[] {
+  const problems_ = new Set(problems.map((p) => p.slug));
+  const seen = new Map<string, number>();
+  const errors: string[] = [];
+
+  for (const week of weeks) {
+    for (const slug of writtenSlugs(week)) {
+      if (!problems_.has(slug)) {
+        errors.push(`${week.week}주차가 없는 문제를 가리킵니다: ${slug}`);
+      }
+      const already = seen.get(slug);
+      if (already !== undefined) {
+        errors.push(`${slug} 이 ${already}주차와 ${week.week}주차에 중복 배치됐습니다.`);
+      }
+      seen.set(slug, week.week);
+    }
+  }
+
+  for (const problem of problems) {
+    if (!seen.has(problem.slug)) {
+      errors.push(`${problem.slug} 이 어느 주차에도 배치되지 않았습니다.`);
+    }
+  }
+
+  return errors;
+}
+
 /* ----------------------------------- main ---------------------------------- */
 
 const failures: Failure[] = [];
 let checkedCases = 0;
+
+for (const detail of checkCurriculum()) {
+  failures.push({ problem: "커리큘럼", language: "javascript", detail });
+}
 
 for (const problem of problems) {
   const marks: string[] = [];
@@ -213,6 +251,7 @@ if (failures.length === 0) {
   console.log(
     `통과 — 문제 ${problems.length}개, 실행한 케이스 ${checkedCases}개, 언어 ${LANGUAGES.length}종.`,
   );
+  console.log(`커리큘럼 ${weeks.length}주차 배치도 일치합니다.`);
   process.exit(0);
 }
 

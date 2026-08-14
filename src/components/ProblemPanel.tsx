@@ -1,6 +1,5 @@
 "use client";
 
-import { Code } from "@astryxdesign/core/Code";
 import { CodeBlock } from "@astryxdesign/core/CodeBlock";
 import { Collapsible } from "@astryxdesign/core/Collapsible";
 import { Divider } from "@astryxdesign/core/Divider";
@@ -13,28 +12,10 @@ import {
 } from "@astryxdesign/core/MetadataList";
 import { Heading, Text } from "@astryxdesign/core/Text";
 import { Token } from "@astryxdesign/core/Token";
-import { Fragment } from "react";
 import { DifficultyToken } from "@/components/DifficultyToken";
+import { RichText } from "@/components/RichText";
+import { weekOfProblem } from "@/lib/curriculum";
 import type { Language, Problem } from "@/lib/types";
-
-/**
- * Problem prose is plain text with `backtick` spans for identifiers — just
- * enough formatting to avoid pulling in a markdown renderer.
- */
-function RichText({ text }: { text: string }) {
-  const parts = text.split(/(`[^`]+`)/g);
-  return (
-    <>
-      {parts.map((part, i) =>
-        part.length > 2 && part.startsWith("`") && part.endsWith("`") ? (
-          <Code key={i}>{part.slice(1, -1)}</Code>
-        ) : (
-          <Fragment key={i}>{part}</Fragment>
-        ),
-      )}
-    </>
-  );
-}
 
 export function ProblemPanel({
   problem,
@@ -49,9 +30,18 @@ export function ProblemPanel({
   prev?: { slug: string; title: string };
   next?: { slug: string; title: string };
 }) {
+  // Every problem belongs to a week, so the lesson behind it is always one hop
+  // away — the concept is the point of the site, not a footnote.
+  const week = weekOfProblem(problem.slug);
+
   return (
     <VStack gap={6} padding={5}>
       <VStack gap={3}>
+        {week && (
+          <Link href={`/week/${week.week}`} isStandalone>
+            ← {week.week}주차 · {week.title}
+          </Link>
+        )}
         <HStack gap={1.5} align="center" wrap="wrap">
           <DifficultyToken difficulty={problem.difficulty} />
           {problem.tags.map((t) => (
