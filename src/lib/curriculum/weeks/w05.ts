@@ -93,6 +93,7 @@ return False`,
   ],
   problems: [
     {
+      slug: "duplicate-check",
       title: "중복 원소 찾기",
       role: "워밍업",
       teaches: "셋으로 '본 적 있나' 판정하기",

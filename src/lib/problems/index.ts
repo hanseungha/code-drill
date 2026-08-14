@@ -2,6 +2,7 @@ import type { Problem } from "@/lib/types";
 import { binarySearch } from "./binary-search";
 import { climbingStairs } from "./climbing-stairs";
 import { coinChange } from "./coin-change";
+import { duplicateCheck } from "./duplicate-check";
 import { groupAnagrams } from "./group-anagrams";
 import { invertTree } from "./invert-tree";
 import { longestUniqueSubstring } from "./longest-unique-substring";
@@ -21,7 +22,8 @@ import { validateBst } from "./validate-bst";
  * week's warm-up is often easier than the previous week's challenge.
  */
 export const problems: Problem[] = [
-  twoSum, // 5주차 · 해시: 맵과 셋
+  duplicateCheck, // 5주차 · 해시: 맵과 셋
+  twoSum, // 5주차
   groupAnagrams, // 7주차 · 정렬
   maxSubarray, // 8주차 · 투 포인터와 슬라이딩 윈도우
   longestUniqueSubstring, // 8주차
@@ -35,7 +37,7 @@ export const problems: Problem[] = [
   numberOfIslands, // 15주차 · 그래프와 DFS · BFS
   minHeap, // 18주차 · 힙과 우선순위 큐
   topKFrequent, // 18주차
-  climbingStairs, // 19주차 · DP 입문
+  climbingStairs, // 19주차 · DP 입문 (1차원)
 ];
 
 export function getProblem(slug: string): Problem | undefined {

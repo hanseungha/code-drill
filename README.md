@@ -49,6 +49,7 @@ npm install
 npm run dev      # http://localhost:3000
 npm run build
 npm run lint
+npm run author   # 남은 문제를 채우는 저작 도구 (아래 참고)
 npm run verify   # 모든 모범 답안을 실제 채점기로 검증
 npm run docs     # docs/curriculum.md 의 주차 목록을 커리큘럼 데이터에서 다시 생성
 npm run baekjoon # 백준 추천 문제 목록을 다시 받아옴 (결과는 커밋되어 있음)
@@ -57,7 +58,8 @@ npm run baekjoon # 백준 추천 문제 목록을 다시 받아옴 (결과는 �
 `npm run verify`는 브라우저에 배포되는 워커 코드를 그대로 사용합니다.
 `js-runner.js`는 `node:vm`에서, `py-runner.js`의 파이썬 하네스는 로컬
 `python3`에서 실행해 모든 문제 × 2개 언어의 테스트 케이스를 확인합니다.
-문제를 추가한 뒤에는 반드시 돌려보세요 — 기댓값 오타를 여기서 잡습니다.
+실행부는 `scripts/runners.mts` 하나이고 `npm run author` 도 같은 코드를 씁니다 —
+채점기를 다시 구현한 곳이 없어야 커맨드라인의 결과와 브라우저의 결과가 같습니다.
 
 ## 학습 과정
 
@@ -95,9 +97,30 @@ npm run baekjoon # 백준 추천 문제 목록을 다시 받아옴 (결과는 �
 
 ## 문제 추가하기
 
-1. `src/lib/problems/<slug>.ts` 를 만들고 `Problem` 타입에 맞춰 작성합니다.
-2. `src/lib/problems/index.ts` 의 `problems` 배열에 해당 주차 위치로 넣습니다.
-3. `npm run verify` 로 모범 답안이 통과하는지 확인합니다.
+`npm run author` 가 순서를 잡아줍니다.
+
+```bash
+npm run author                                # 아직 안 쓴 슬롯 목록
+npm run author -- new 5.1 duplicate-check     # 그 슬롯에 맞춘 파일 스캐폴드
+                       --args nums            # 정답 함수의 매개변수 이름
+npm run author -- fill duplicate-check        # expected 생성 · 교차 검증 · 배선
+```
+
+가운데 단계에서 사람이 하는 일은 설명과 두 언어의 `solution`, 그리고 테스트
+케이스의 **`input` 까지**입니다. `expected` 는 적지 않습니다.
+
+`fill` 이 그 자리를 채웁니다. 두 정답 코드를 실제 채점기로 돌려 값을 얻고,
+**두 언어의 결과가 일치할 때만** 파일에 적습니다. 손으로 적은 기댓값은 결국
+추측이고 `npm run verify` 는 그 추측을 자기 자신과 비교할 뿐이지만, 서로 다른
+두 구현이 같은 값에 도달했다는 건 증거입니다.
+
+통과하면 배선까지 합니다 — 주차 파일의 계획된 슬롯에 `slug` 를 넣고,
+`src/lib/problems/index.ts` 의 import 와 목록을 주차·슬롯 순서로 다시 씁니다.
+그래서 문제는 두 정답이 합의한 뒤에야 사이트에 들어옵니다.
+
+거절하는 경우는 세 가지입니다. JS와 Python의 결과가 다를 때, 적어둔 `expected`
+가 실행 결과와 다를 때(정답 코드가 맞다면 `--force`), 정답 코드가 예외를 내거나
+아무 값도 반환하지 않을 때. 어느 쪽이든 파일은 건드리지 않습니다.
 
 핵심 필드만 추리면 이렇습니다.
 
@@ -107,13 +130,16 @@ export const myProblem: Problem = {
   entry: { javascript: "solve", python: "solve" },  // 채점기가 호출할 함수 이름
   starter: { javascript: "...", python: "..." },
   testCases: [
-    { input: [[1, 2, 3], 4], expected: [0, 1] },     // input은 인자 목록
-    { input: [[1], 1], expected: [0], hidden: true }, // hidden은 제출할 때만 실행
+    { input: [[1, 2, 3], 4] },                       // input은 인자 목록
+    { input: [[1], 1], hidden: true },               // hidden은 제출할 때만 실행
   ],
   compare: "unordered",  // 생략하면 "exact"
   solution: { javascript: "...", python: "..." },
 };
 ```
+
+`expected` 는 타입에서만 선택 항목입니다. 비어 있는 채로 남으면 `npm run verify`
+가 실패하므로, 배포되는 문제에는 항상 들어 있습니다.
 
 `compare` 는 반환 순서가 자유로운 문제에 씁니다.
 

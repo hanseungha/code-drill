@@ -52,7 +52,13 @@ export const TREE_ENCODING_NOTE =
 export interface TestCase {
   /** Arguments spread into the solution function, in order. */
   input: unknown[];
-  expected: unknown;
+  /**
+   * Optional only so a draft can be written without it: `npm run author -- fill
+   * <slug>` derives the value by running both reference solutions through the
+   * real graders and requiring them to agree. `npm run verify` rejects a
+   * problem that still has one missing, so shipped problems always have it.
+   */
+  expected?: unknown;
   /** Hidden cases only run on 제출 and their input is never shown. */
   hidden?: boolean;
 }
