@@ -142,21 +142,25 @@ for i in range(n):
   ],
   problems: [
     {
+      slug: "array-sum-max",
       title: "배열의 합과 최댓값",
       role: "워밍업",
       teaches: "순회 기본과 언어별 배열 API",
     },
     {
+      slug: "max-row-sum",
       title: "행의 합이 가장 큰 줄",
       role: "핵심",
       teaches: "2차원 배열을 행 단위로 훑기",
     },
     {
+      slug: "range-sum",
       title: "구간 합 구하기",
       role: "핵심",
       teaches: "누적합으로 질문마다 O(1)에 답하기",
     },
     {
+      slug: "range-add",
       title: "구간에 값 더하기",
       role: "도전",
       teaches: "차분 배열 — 갱신을 O(1)로 미루기",

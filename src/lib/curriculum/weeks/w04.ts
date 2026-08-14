@@ -203,21 +203,25 @@ for _ in range(turns):
   ],
   problems: [
     {
+      slug: "three-sum",
       title: "세 수의 합",
       role: "워밍업",
       teaches: "삼중 반복문으로 모든 경우를 만들어 보기",
     },
     {
+      slug: "subset-sum",
       title: "부분집합의 합",
       role: "핵심",
       teaches: "비트마스크로 2ⁿ개 부분집합 순회하기",
     },
     {
+      slug: "rotate-matrix",
       title: "행렬 90도 회전",
       role: "핵심",
       teaches: "전치 후 뒤집기로 나눠 생각하기",
     },
     {
+      slug: "robot-simulation",
       title: "로봇 시뮬레이션",
       role: "도전",
       teaches: "방향과 위치를 상태로 관리하기",

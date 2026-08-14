@@ -101,21 +101,25 @@ return True`,
   ],
   problems: [
     {
+      slug: "reverse-string",
       title: "문자열 뒤집기",
       role: "워밍업",
       teaches: "인덱싱과 슬라이싱에 익숙해지기",
     },
     {
+      slug: "palindrome-check",
       title: "팰린드롬 검사",
       role: "핵심",
       teaches: "정규화 후 양끝 비교",
     },
     {
+      slug: "anagram-check",
       title: "애너그램 판별",
       role: "핵심",
       teaches: "정렬 풀이와 빈도수 풀이를 둘 다 써보고 비교하기",
     },
     {
+      slug: "compress-string",
       title: "문자열 압축",
       role: "도전",
       teaches: "연속 구간 스캔과 버퍼로 이어붙이기",

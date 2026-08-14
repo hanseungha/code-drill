@@ -59,21 +59,25 @@ export const w06: Week = {
   patterns: [],
   problems: [
     {
+      slug: "unfinished-player",
       title: "완주하지 못한 선수",
       role: "모의고사",
       teaches: "",
     },
     {
+      slug: "carpet",
       title: "카펫 만들기",
       role: "모의고사",
       teaches: "",
     },
     {
+      slug: "spiral-order",
       title: "나선형 순회",
       role: "모의고사",
       teaches: "",
     },
     {
+      slug: "word-to-number",
       title: "영단어를 숫자로 바꾸기",
       role: "모의고사",
       teaches: "",

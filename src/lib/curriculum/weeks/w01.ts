@@ -168,21 +168,25 @@ return str(n)`,
   ],
   problems: [
     {
+      slug: "quotient-remainder",
       title: "몫과 나머지",
       role: "워밍업",
       teaches: "두 언어의 정수 나눗셈 차이를 직접 겪기",
     },
     {
+      slug: "fizz-buzz",
       title: "FizzBuzz",
       role: "워밍업",
       teaches: "조건 분기의 순서 — 15의 배수를 먼저 봐야 하는 이유",
     },
     {
+      slug: "min-and-max",
       title: "최솟값과 최댓값",
       role: "핵심",
       teaches: "한 번 순회로 두 값을 구하고 함께 반환하기",
     },
     {
+      slug: "divisors",
       title: "약수 구하기",
       role: "도전",
       teaches: "O(n)을 O(√n)으로 줄이며 복잡도를 체감하기",
