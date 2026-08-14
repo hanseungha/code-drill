@@ -56,6 +56,8 @@ function runJavaScript(problem: Problem, code: string): Promise<Outcome[]> {
         code,
         entry: problem.entry.javascript,
         tests: problem.testCases.map((t) => ({ input: t.input })),
+        argShapes: problem.argShapes ?? null,
+        returnShape: problem.returnShape ?? null,
       },
     });
   });
@@ -80,7 +82,7 @@ __cd_payload = json.loads(__cd_sys.stdin.read())
 __cd_prepare(__cd_payload["code"], __cd_payload["entry"])
 __cd_out = __cd_run(
     __cd_payload["entry"],
-    json.dumps(__cd_payload["tests"]),
+    json.dumps(__cd_payload["payload"]),
     lambda _i: None,
 )
 __cd_sys.stderr.write("${PY_SENTINEL}" + __cd_out)
@@ -90,7 +92,11 @@ __cd_sys.stderr.write("${PY_SENTINEL}" + __cd_out)
     input: JSON.stringify({
       code,
       entry: problem.entry.python,
-      tests: problem.testCases.map((t) => ({ input: t.input })),
+      payload: {
+        tests: problem.testCases.map((t) => ({ input: t.input })),
+        argShapes: problem.argShapes ?? null,
+        returnShape: problem.returnShape ?? null,
+      },
     }),
     encoding: "utf8",
     maxBuffer: 32 * 1024 * 1024,

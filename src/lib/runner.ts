@@ -238,6 +238,12 @@ export function runTests(options: RunOptions): Promise<RunOutcome> {
     if (runtimeReady) onStage?.("running");
     else onStage?.(language === "python" ? "loading-runtime" : "starting");
     armTimer(runtimeReady ? RUN_TIMEOUT_MS : LOAD_TIMEOUT_MS);
-    worker.postMessage({ code, entry: problem.entry[language], tests });
+    worker.postMessage({
+      code,
+      entry: problem.entry[language],
+      tests,
+      argShapes: problem.argShapes ?? null,
+      returnShape: problem.returnShape ?? null,
+    });
   });
 }

@@ -3,7 +3,7 @@
  * loop only wedges this thread — the page stays responsive and can terminate us.
  *
  * Protocol
- *   in : { code, entry, tests: [{ input: unknown[] }] }
+ *   in : { code, entry, tests: [{ input: unknown[] }], argShapes?, returnShape? }
  *   out: { type: "progress", index }
  *        { type: "done", results: TestOutcome[] }
  *        { type: "fatal", message }
@@ -70,6 +70,91 @@ function clone(value) {
   }
 }
 
+/* ------------------------------ shaped values ------------------------------ */
+
+/**
+ * Test cases travel as plain JSON so one case can drive both graders. Values a
+ * solution wants as real objects are declared per problem through `argShapes` /
+ * `returnShape` and converted here — arguments on the way in, the return value
+ * on the way out. See src/lib/types.ts for the encoding.
+ */
+class TreeNode {
+  constructor(val, left, right) {
+    this.val = val === undefined ? 0 : val;
+    this.left = left === undefined ? null : left;
+    this.right = right === undefined ? null : right;
+  }
+}
+
+/**
+ * Published as a global rather than injected into the compiled source: a
+ * submission that declares its own `TreeNode` then merely shadows this one
+ * inside its function scope, where prepending a declaration would instead be a
+ * redeclaration SyntaxError. The grader keeps using the class captured here.
+ */
+self.TreeNode = TreeNode;
+
+/** Guards against a returned tree that links back to itself. */
+const MAX_TREE_NODES = 200000;
+
+function buildTree(values) {
+  if (!Array.isArray(values) || values.length === 0 || values[0] === null) {
+    return null;
+  }
+  const root = new TreeNode(values[0]);
+  const queue = [root];
+  let head = 0;
+  let i = 1;
+  while (head < queue.length && i < values.length) {
+    const node = queue[head++];
+    if (i < values.length) {
+      const left = values[i++];
+      if (left !== null) {
+        node.left = new TreeNode(left);
+        queue.push(node.left);
+      }
+    }
+    if (i < values.length) {
+      const right = values[i++];
+      if (right !== null) {
+        node.right = new TreeNode(right);
+        queue.push(node.right);
+      }
+    }
+  }
+  return root;
+}
+
+function treeToArray(root) {
+  const out = [];
+  if (root === null || root === undefined) return out;
+  const queue = [root];
+  let head = 0;
+  while (head < queue.length) {
+    const node = queue[head++];
+    if (node === null || node === undefined) {
+      out.push(null);
+      continue;
+    }
+    if (out.length > MAX_TREE_NODES) {
+      throw new Error("반환한 트리가 너무 큽니다. 순환 참조가 있는지 확인하세요.");
+    }
+    out.push(node.val);
+    queue.push(node.left === undefined ? null : node.left);
+    queue.push(node.right === undefined ? null : node.right);
+  }
+  while (out.length > 0 && out[out.length - 1] === null) out.pop();
+  return out;
+}
+
+function reviveArg(value, shape) {
+  return shape === "tree" ? buildTree(value) : value;
+}
+
+function serializeReturn(value, shape) {
+  return shape === "tree" ? treeToArray(value) : value;
+}
+
 const logs = [];
 let logChars = 0;
 
@@ -112,7 +197,8 @@ function formatError(err) {
 }
 
 self.onmessage = async (event) => {
-  const { code, entry, tests } = event.data;
+  const { code, entry, tests, argShapes, returnShape } = event.data;
+  const shapes = Array.isArray(argShapes) ? argShapes : [];
 
   let fn;
   try {
@@ -140,17 +226,22 @@ self.onmessage = async (event) => {
   for (let i = 0; i < tests.length; i++) {
     logs.length = 0;
     logChars = 0;
-    const args = tests[i].input.map(clone);
+    const args = tests[i].input.map((value, k) =>
+      reviveArg(clone(value), shapes[k]),
+    );
     const started = performance.now();
     try {
       const returned = await fn(...args);
       const ms = performance.now() - started;
+      // Tested before serializing: an empty tree is a legitimate `null`, but a
+      // stub that never returns leaves `undefined`, and shaping would erase the
+      // difference by turning both into [].
       if (returned === undefined) {
         results.push({ ok: true, undef: true, stdout: logs.join("\n"), ms });
       } else {
         results.push({
           ok: true,
-          json: toJson(returned),
+          json: toJson(serializeReturn(returned, returnShape)),
           stdout: logs.join("\n"),
           ms,
         });
