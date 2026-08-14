@@ -1,26 +1,80 @@
 @import "tailwindcss";
 
+@theme {
+  --color-canvas: #0a0c10;
+  --color-surface: #11141a;
+  --color-elevated: #171b22;
+  --color-line: #232935;
+  --color-line-strong: #313949;
+  --color-ink: #e7eaf0;
+  --color-muted: #8f99a9;
+  --color-faint: #616b7d;
+
+  --color-brand: #2dd4bf;
+  --color-brand-dim: #0f766e;
+
+  --color-easy: #4ade80;
+  --color-medium: #fbbf24;
+  --color-hard: #f87171;
+
+  --color-pass: #4ade80;
+  --color-fail: #f87171;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-brand) 30%, transparent);
+}
+
+/* Slim scrollbars so the split panes don't feel chunky. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-faint);
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

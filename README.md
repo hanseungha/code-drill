@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# code-drill
 
-## Getting Started
+브라우저에서 바로 코드를 실행하고 채점하는 코딩테스트 연습 사이트입니다.
+JavaScript와 Python을 지원하며, 채점 서버가 없습니다 — 제출한 코드는 사용자의
+브라우저 안에서만 실행됩니다.
 
-First, run the development server:
+## 어떻게 서버 없이 채점하나
+
+| 언어 | 실행 방식 |
+| --- | --- |
+| JavaScript | Web Worker 안에서 `new Function`으로 컴파일해 실행 |
+| Python | [Pyodide](https://pyodide.org)(WebAssembly로 컴파일된 CPython 3.14)를 모듈 워커에서 구동 |
+
+워커를 쓰는 이유는 격리가 아니라 **응답성**입니다. 무한 루프가 들어와도 워커
+스레드만 멈추고, 메인 스레드가 제한 시간(8초) 뒤에 `terminate()`로 끊어냅니다.
+
+채점은 워커가 반환값을 JSON으로 직렬화해 메인 스레드로 넘기고, 메인 스레드가
+비교하는 구조입니다. 두 언어의 결과가 같은 JSON 도메인으로 정규화되므로 파이썬
+튜플과 자바스크립트 배열이 동일하게 취급됩니다.
+
+> 브라우저에서 실행된다는 것은 **다른 사람의 코드로부터 서버를 지킬 필요가 없다**는
+> 뜻이지, 사용자가 자기 브라우저에서 임의 코드를 실행하지 못한다는 뜻은 아닙니다.
+> 이 구조는 개인 연습용입니다. 신뢰할 수 없는 제출을 다루는 대회용 저지로 쓰려면
+> 서버 측 샌드박스가 따로 필요합니다.
+
+## 개발
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm run build
+npm run lint
+npm run verify   # 모든 모범 답안을 실제 채점기로 검증
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run verify`는 브라우저에 배포되는 워커 코드를 그대로 사용합니다.
+`js-runner.js`는 `node:vm`에서, `py-runner.js`의 파이썬 하네스는 로컬
+`python3`에서 실행해 10개 문제 × 2개 언어의 모든 테스트 케이스를 확인합니다.
+문제를 추가한 뒤에는 반드시 돌려보세요 — 기댓값 오타를 여기서 잡습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 문제 추가하기
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. `src/lib/problems/<slug>.ts` 를 만들고 `Problem` 타입에 맞춰 작성합니다.
+2. `src/lib/problems/index.ts` 의 `problems` 배열에 추가합니다. 배열 순서가 곧
+   목록에 보이는 순서이므로 난이도순으로 넣으면 학습 경로가 됩니다.
+3. `npm run verify` 로 모범 답안이 통과하는지 확인합니다.
 
-## Learn More
+핵심 필드만 추리면 이렇습니다.
 
-To learn more about Next.js, take a look at the following resources:
+```ts
+export const myProblem: Problem = {
+  slug: "my-problem",
+  entry: { javascript: "solve", python: "solve" },  // 채점기가 호출할 함수 이름
+  starter: { javascript: "...", python: "..." },
+  testCases: [
+    { input: [[1, 2, 3], 4], expected: [0, 1] },     // input은 인자 목록
+    { input: [[1], 1], expected: [0], hidden: true }, // hidden은 제출할 때만 실행
+  ],
+  compare: "unordered",  // 생략하면 "exact"
+  solution: { javascript: "...", python: "..." },
+};
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`compare` 는 반환 순서가 자유로운 문제에 씁니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `exact` (기본값) — 순서까지 일치해야 함
+- `unordered` — 최상위 배열의 순서를 무시
+- `unordered-deep` — 중첩된 모든 배열의 순서를 무시 (예: 애너그램 묶기)
 
-## Deploy on Vercel
+## 구조
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/lib/problems/     문제 정의 (한 파일에 한 문제)
+src/lib/runner.ts     워커 수명 관리, 제한 시간, 결과 매핑
+src/lib/compare.ts    정답 비교 및 정규화
+src/lib/storage.ts    localStorage 기반 진행률과 코드 임시 저장
+public/workers/       브라우저에서 실제로 실행되는 채점기 두 개
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+진행 상황과 작성 중인 코드는 `localStorage`에만 저장됩니다. 계정도 데이터베이스도
+없으므로 브라우저를 지우면 기록도 사라집니다.
+
+## 라이선스
+
+MIT
