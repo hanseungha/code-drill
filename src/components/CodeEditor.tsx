@@ -1,5 +1,6 @@
 "use client";
 
+import { Text } from "@astryxdesign/core/Text";
 import Editor, { type Monaco } from "@monaco-editor/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Language } from "@/lib/types";
@@ -213,9 +214,7 @@ export function CodeEditor({
       onChange={(next) => onChange(next ?? "")}
       beforeMount={beforeMount}
       theme={THEME_NAME}
-      loading={
-        <span className="text-sm text-disabled">에디터를 불러오는 중…</span>
-      }
+      loading={<Text color="disabled">에디터를 불러오는 중…</Text>}
       options={{
         fontSize: 13.5,
         fontFamily: "var(--font-family-code)",

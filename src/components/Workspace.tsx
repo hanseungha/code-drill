@@ -1,10 +1,26 @@
 "use client";
 
+import { Button } from "@astryxdesign/core/Button";
+import { useMediaQuery } from "@astryxdesign/core/hooks";
+import { Divider } from "@astryxdesign/core/Divider";
+import {
+  HStack,
+  Layout,
+  LayoutContent,
+  LayoutPanel,
+  StackItem,
+  VStack,
+} from "@astryxdesign/core/Layout";
+import { ResizeHandle, useResizable } from "@astryxdesign/core/Resizable";
+import {
+  SegmentedControl,
+  SegmentedControlItem,
+} from "@astryxdesign/core/SegmentedControl";
+import { Tab, TabList } from "@astryxdesign/core/TabList";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CodeEditor } from "@/components/CodeEditor";
 import { ProblemPanel } from "@/components/ProblemPanel";
 import { ResultPanel } from "@/components/ResultPanel";
-import { useSplit } from "@/components/useSplit";
 import { runTests, warmUp, type RunOutcome, type RunStage } from "@/lib/runner";
 import {
   clearCode,
@@ -25,6 +41,11 @@ interface WorkspaceProps {
   next?: { slug: string; title: string };
 }
 
+/**
+ * Responsive contract:
+ *   > 1024px  problem panel 300–720 (resizable) | editor · results
+ *   <= 1024px the two regions become 문제 / 코드 tabs; no split, no handles
+ */
 export function Workspace({ problem, prev, next }: WorkspaceProps) {
   const [language, setLanguage] = useState<Language>("javascript");
   const [code, setCode] = useState(problem.starter.javascript);
@@ -37,18 +58,22 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
   const solved = useSolvedSlugs().includes(problem.slug);
   const runningRef = useRef<"run" | "submit" | null>(null);
 
-  const {
-    percent: problemWidth,
-    containerRef: columnsRef,
-    onPointerDown: startColumnDrag,
-    onKeyDown: onColumnDragKey,
-  } = useSplit({ axis: "x", initial: 44, min: 25, max: 70 });
-  const {
-    percent: editorHeight,
-    containerRef: rowsRef,
-    onPointerDown: startRowDrag,
-    onKeyDown: onRowDragKey,
-  } = useSplit({ axis: "y", initial: 62, min: 25, max: 85 });
+  // useMediaQuery returns false during SSR, so the first paint is the split
+  // layout; the narrow layout swaps in on the client.
+  const isNarrow = useMediaQuery("(max-width: 1024px)");
+
+  const problemPane = useResizable({
+    defaultSize: 480,
+    minSizePx: 300,
+    maxSizePx: 720,
+    autoSaveId: "code-drill:problem-pane",
+  });
+  const resultPane = useResizable({
+    defaultSize: 260,
+    minSizePx: 120,
+    maxSizePx: 560,
+    autoSaveId: "code-drill:result-pane",
+  });
 
   // Restore the saved language and draft only after hydration — reading
   // localStorage during render would make the server and client markup differ.
@@ -65,10 +90,7 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
 
   useEffect(() => {
     if (!hydrated) return;
-    const timer = setTimeout(
-      () => saveCode(problem.slug, language, code),
-      600,
-    );
+    const timer = setTimeout(() => saveCode(problem.slug, language, code), 600);
     return () => clearTimeout(timer);
   }, [hydrated, code, language, problem.slug]);
 
@@ -138,126 +160,139 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
     setOutcome(null);
   }, [problem.slug, problem.starter, language]);
 
-  return (
-    <main className="flex h-[calc(100dvh-3.5rem)] flex-col">
-      <div className="flex shrink-0 items-center gap-1 border-b border-border bg-card px-3 py-1.5 lg:hidden">
-        {(["problem", "code"] as MobileView[]).map((v) => (
-          <button
-            key={v}
-            type="button"
-            onClick={() => setView(v)}
-            aria-pressed={view === v}
-            className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
-              view === v ? "bg-muted text-primary" : "text-secondary"
-            }`}
+  const problemRegion = (
+    <ProblemPanel
+      problem={problem}
+      language={language}
+      solved={solved}
+      prev={prev}
+      next={next}
+    />
+  );
+
+  const codeRegion = (
+    <VStack height="100%" gap={0}>
+      <HStack
+        gap={2}
+        align="center"
+        justify="between"
+        paddingInline={3}
+        paddingBlock={2}
+        wrap="wrap"
+      >
+        <HStack gap={2} align="center">
+          <SegmentedControl
+            value={language}
+            onChange={(next) => changeLanguage(next as Language)}
+            label="언어 선택"
+            size="sm"
           >
-            {v === "problem" ? "문제" : "코드"}
-          </button>
-        ))}
-      </div>
-
-      <div ref={columnsRef} className="flex min-h-0 flex-1 lg:flex-row">
-        <section
-          className={`min-h-0 min-w-0 flex-1 border-border lg:flex-none lg:border-r ${
-            view === "problem" ? "" : "hidden lg:block"
-          }`}
-          style={{ flexBasis: `${problemWidth}%` }}
-        >
-          <ProblemPanel
-            problem={problem}
-            language={language}
-            solved={solved}
-            prev={prev}
-            next={next}
+            {LANGUAGES.map((lang) => (
+              <SegmentedControlItem
+                key={lang}
+                value={lang}
+                label={LANGUAGE_LABEL[lang]}
+              />
+            ))}
+          </SegmentedControl>
+          <Button
+            variant="ghost"
+            size="sm"
+            label="초기화"
+            onClick={resetCode}
           />
-        </section>
+        </HStack>
+        <HStack gap={2} align="center">
+          <Button
+            variant="secondary"
+            size="sm"
+            label="실행"
+            tooltip="예시 테스트만 실행 (Cmd/Ctrl+Enter)"
+            isDisabled={running !== null}
+            onClick={() => void run("run")}
+          />
+          <Button
+            variant="primary"
+            size="sm"
+            label="제출"
+            tooltip="숨김 테스트까지 채점 (Cmd/Ctrl+Shift+Enter)"
+            isLoading={running === "submit"}
+            isDisabled={running !== null}
+            onClick={() => void run("submit")}
+          />
+        </HStack>
+      </HStack>
+      <Divider />
 
-        <div
-          role="separator"
-          aria-orientation="vertical"
-          aria-label="문제와 코드 영역 너비 조절"
-          tabIndex={0}
-          onPointerDown={startColumnDrag}
-          onKeyDown={onColumnDragKey}
-          className="hidden w-1 shrink-0 cursor-col-resize bg-border transition hover:bg-accent/50 focus-visible:bg-accent focus-visible:outline-none lg:block"
-        />
+      <StackItem size="fill">
+        <CodeEditor language={language} value={code} onChange={setCode} />
+      </StackItem>
 
-        <section
-          className={`flex min-h-0 min-w-0 flex-1 flex-col ${
-            view === "code" ? "" : "hidden lg:flex"
-          }`}
+      {isNarrow ? (
+        <>
+          <Divider />
+          <VStack height={260}>
+            <ResultPanel outcome={outcome} running={running} stage={stage} />
+          </VStack>
+        </>
+      ) : (
+        <>
+          <ResizeHandle
+            direction="vertical"
+            hasDivider
+            isReversed
+            resizable={resultPane.props}
+            label="결과 영역 높이 조절"
+          />
+          <VStack height={resultPane.size}>
+            <ResultPanel outcome={outcome} running={running} stage={stage} />
+          </VStack>
+        </>
+      )}
+    </VStack>
+  );
+
+  if (isNarrow) {
+    return (
+      <VStack height="100%" gap={0} as="main">
+        <TabList
+          value={view}
+          onChange={(next) => setView(next as MobileView)}
+          hasDivider
+          layout="fill"
         >
-          <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-card px-3 py-2">
-            <div className="flex gap-0.5 rounded-lg bg-muted p-0.5">
-              {LANGUAGES.map((lang) => (
-                <button
-                  key={lang}
-                  type="button"
-                  onClick={() => changeLanguage(lang)}
-                  aria-pressed={language === lang}
-                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition ${
-                    language === lang
-                      ? "bg-body text-primary shadow-sm"
-                      : "text-secondary hover:text-primary"
-                  }`}
-                >
-                  {LANGUAGE_LABEL[lang]}
-                </button>
-              ))}
-            </div>
+          <Tab value="problem" label="문제" />
+          <Tab value="code" label="코드" />
+        </TabList>
+        <StackItem size="fill" isScrollable={view === "problem"}>
+          {view === "problem" ? problemRegion : codeRegion}
+        </StackItem>
+      </VStack>
+    );
+  }
 
-            <button
-              type="button"
-              onClick={resetCode}
-              className="rounded-md px-2 py-1 text-xs text-disabled transition hover:bg-muted hover:text-secondary"
-            >
-              초기화
-            </button>
-
-            <div className="ml-auto flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => void run("run")}
-                disabled={running !== null}
-                className="rounded-lg border border-border bg-muted px-3 py-1.5 text-xs font-medium transition hover:border-strong disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                실행
-              </button>
-              <button
-                type="button"
-                onClick={() => void run("submit")}
-                disabled={running !== null}
-                className="rounded-lg bg-accent px-3.5 py-1.5 text-xs font-semibold text-on-accent transition hover:bg-accent/85 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                제출
-              </button>
-            </div>
-          </div>
-
-          <div ref={rowsRef} className="flex min-h-0 flex-1 flex-col">
-            <div
-              className="min-h-0 overflow-hidden bg-card"
-              style={{ flexBasis: `${editorHeight}%`, flexGrow: 0, flexShrink: 1 }}
-            >
-              <CodeEditor language={language} value={code} onChange={setCode} />
-            </div>
-
-            <div
-              role="separator"
-              aria-orientation="horizontal"
-              aria-label="에디터와 결과 영역 높이 조절"
-              tabIndex={0}
-              onPointerDown={startRowDrag}
-              onKeyDown={onRowDragKey}
-              className="h-1 shrink-0 cursor-row-resize bg-border transition hover:bg-accent/50 focus-visible:bg-accent focus-visible:outline-none"
-            />
-
-            <div className="min-h-0 flex-1 overflow-hidden border-t border-border bg-body">
-              <ResultPanel outcome={outcome} running={running} stage={stage} />
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
+  return (
+    <Layout
+      height="fill"
+      start={
+        <>
+          <LayoutPanel
+            resizable={problemPane.props}
+            padding={0}
+            isScrollable
+            label="문제 설명"
+          >
+            {problemRegion}
+          </LayoutPanel>
+          <ResizeHandle
+            direction="horizontal"
+            hasDivider
+            resizable={problemPane.props}
+            label="문제 영역 너비 조절"
+          />
+        </>
+      }
+      content={<LayoutContent padding={0}>{codeRegion}</LayoutContent>}
+    />
   );
 }

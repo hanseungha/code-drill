@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
+import { AppFrame } from "@/components/AppFrame";
 import { ColorModeScript } from "@/components/ColorModeScript";
-import { ColorModeToggle } from "@/components/ColorModeToggle";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -35,55 +34,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
     >
       <head>
         <ColorModeScript />
       </head>
-      <body className="flex min-h-full flex-col bg-body text-primary">
+      <body>
         <Providers>
-        <header className="sticky top-0 z-30 border-b border-border bg-body/85 backdrop-blur">
-          <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-5">
-            <Link
-              href="/"
-              className="group flex items-center gap-2 font-mono text-[15px] font-semibold tracking-tight"
-            >
-              <span
-                aria-hidden
-                className="grid size-6 place-items-center rounded-md bg-accent/15 text-accent ring-1 ring-accent/30 transition group-hover:bg-accent/25"
-              >
-                <svg viewBox="0 0 24 24" className="size-3.5" fill="none">
-                  <path
-                    d="M8 6 3 12l5 6M16 6l5 6-5 6"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-              code-drill
-            </Link>
-            <nav className="ml-auto flex items-center gap-1 text-sm">
-              <Link
-                href="/"
-                className="rounded-md px-3 py-1.5 text-secondary transition hover:bg-muted hover:text-primary"
-              >
-                문제
-              </Link>
-              <a
-                href="https://github.com/hanseungha/code-drill"
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-md px-3 py-1.5 text-secondary transition hover:bg-muted hover:text-primary"
-              >
-                GitHub
-              </a>
-              <ColorModeToggle />
-            </nav>
-          </div>
-        </header>
-        <div className="flex flex-1 flex-col">{children}</div>
+          <AppFrame>{children}</AppFrame>
         </Providers>
       </body>
     </html>

@@ -1,5 +1,18 @@
 "use client";
 
+import { Banner } from "@astryxdesign/core/Banner";
+import { Icon } from "@astryxdesign/core/Icon";
+import { Kbd } from "@astryxdesign/core/Kbd";
+import { Center } from "@astryxdesign/core/Center";
+import { HStack, VStack } from "@astryxdesign/core/Layout";
+import { List, ListItem } from "@astryxdesign/core/List";
+import {
+  MetadataList,
+  MetadataListItem,
+} from "@astryxdesign/core/MetadataList";
+import { Spinner } from "@astryxdesign/core/Spinner";
+import { Text } from "@astryxdesign/core/Text";
+import { Token } from "@astryxdesign/core/Token";
 import { display, displayArgs } from "@/lib/compare";
 import type { RunOutcome, RunStage, TestResult } from "@/lib/runner";
 
@@ -20,228 +33,145 @@ export function ResultPanel({
 }) {
   if (running) {
     return (
-      <Centered>
-        <span className="inline-flex items-center gap-2.5 text-sm text-secondary">
-          <Spinner />
-          {STAGE_LABEL[stage]}
-        </span>
-      </Centered>
+      <Center height="100%" padding={4}>
+        <HStack gap={2} align="center">
+          <Spinner size="sm" />
+          <Text color="secondary">{STAGE_LABEL[stage]}</Text>
+        </HStack>
+      </Center>
     );
   }
 
   if (!outcome) {
     return (
-      <Centered>
-        <p className="text-sm text-disabled">
-          코드를 작성하고 <Kbd>실행</Kbd> 을 눌러 예시 테스트를 확인하세요.
-        </p>
-      </Centered>
+      <Center height="100%" padding={4}>
+        <HStack gap={1.5} align="center" wrap="wrap" justify="center">
+          <Text color="secondary">코드를 작성하고</Text>
+          <Kbd keys="mod+enter" />
+          <Text color="secondary">를 눌러 예시 테스트를 확인하세요.</Text>
+        </HStack>
+      </Center>
     );
   }
 
   if (outcome.status === "fatal") {
     return (
-      <div className="p-4">
-        <div className="rounded-lg border border-error/30 bg-error/5 p-3.5">
-          <p className="text-sm font-medium text-error">실행 오류</p>
-          <pre className="mt-2 overflow-x-auto whitespace-pre-wrap font-mono text-[12.5px] leading-relaxed text-primary/85">
+      <VStack padding={4}>
+        <Banner status="error" title="실행 오류" container="card">
+          <Text type="code" display="block">
             {outcome.message}
-          </pre>
-        </div>
-      </div>
+          </Text>
+        </Banner>
+      </VStack>
     );
   }
 
   if (outcome.status === "timeout") {
     return (
-      <div className="p-4">
-        <div className="rounded-lg border border-yellow-ring/40 bg-yellow-subtle p-3.5">
-          <p className="text-sm font-medium text-yellow-vivid">시간 초과</p>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-secondary">
-            {outcome.completed === 0
-              ? `테스트 1번에서 제한 시간을 넘겼습니다.`
-              : `테스트 ${outcome.completed}개를 실행한 뒤 ${outcome.completed + 1}번에서 제한 시간을 넘겼습니다.`}{" "}
-            무한 루프가 있는지, 시간 복잡도가 충분히 낮은지 확인하세요.
-          </p>
-        </div>
-      </div>
+      <VStack padding={4}>
+        <Banner
+          status="warning"
+          title="시간 초과"
+          description={
+            outcome.completed === 0
+              ? "테스트 1번에서 제한 시간을 넘겼습니다. 무한 루프가 있는지, 시간 복잡도가 충분히 낮은지 확인하세요."
+              : `테스트 ${outcome.completed}개를 실행한 뒤 ${outcome.completed + 1}번에서 제한 시간을 넘겼습니다. 무한 루프가 있는지, 시간 복잡도가 충분히 낮은지 확인하세요.`
+          }
+          container="card"
+        />
+      </VStack>
     );
   }
 
   const allPassed = outcome.passed === outcome.total;
 
   return (
-    <div className="flex h-full flex-col">
-      <div
-        className={`flex shrink-0 items-center gap-3 border-b px-4 py-2.5 ${
-          allPassed
-            ? "border-success/20 bg-success/5"
-            : "border-error/20 bg-error/5"
-        }`}
-      >
-        <span
-          className={`inline-flex items-center gap-1.5 text-sm font-semibold ${
-            allPassed ? "text-success" : "text-error"
-          }`}
-        >
-          {allPassed ? <CheckIcon /> : <XIcon />}
-          {allPassed ? "모든 테스트 통과" : "테스트 실패"}
-        </span>
-        <span className="font-mono text-xs text-secondary">
-          {outcome.passed} / {outcome.total}
-        </span>
-      </div>
-
-      <ul className="min-h-0 flex-1 divide-y divide-border overflow-y-auto">
-        {outcome.results.map((result) => (
-          <TestRow key={result.index} result={result} />
-        ))}
-      </ul>
-    </div>
+    <VStack height="100%" gap={0}>
+      <Banner
+        status={allPassed ? "success" : "error"}
+        container="section"
+        title={allPassed ? "모든 테스트 통과" : "테스트 실패"}
+        endContent={
+          <Text type="label" hasTabularNumbers>
+            {outcome.passed} / {outcome.total}
+          </Text>
+        }
+      />
+      <VStack isScrollable height="100%">
+        <List hasDividers density="compact">
+          {outcome.results.map((result) => (
+            <ListItem
+              key={result.index}
+              label={`테스트 ${result.index + 1}`}
+              startContent={
+                <Icon
+                  icon={result.passed ? "success" : "error"}
+                  color={result.passed ? "success" : "error"}
+                  label={result.passed ? "통과" : "실패"}
+                />
+              }
+              endContent={
+                <HStack gap={2} align="center">
+                  {result.hidden && <Token label="숨김" size="sm" />}
+                  <Text type="supporting" hasTabularNumbers>
+                    {result.ms < 1 ? "<1" : Math.round(result.ms)}ms
+                  </Text>
+                </HStack>
+              }
+              description={<TestDetail result={result} />}
+            />
+          ))}
+        </List>
+      </VStack>
+    </VStack>
   );
 }
 
-function TestRow({ result }: { result: TestResult }) {
-  return (
-    <li className="px-4 py-3">
-      <div className="flex items-center gap-2.5">
-        <span
-          className={`inline-flex items-center gap-1.5 text-[13px] font-medium ${
-            result.passed ? "text-success" : "text-error"
-          }`}
-        >
-          {result.passed ? <CheckIcon /> : <XIcon />}
-          테스트 {result.index + 1}
-        </span>
-        {result.hidden && (
-          <span className="rounded bg-muted px-1.5 py-0.5 text-[11px] text-disabled">
-            숨김
-          </span>
-        )}
-        <span className="ml-auto font-mono text-[11px] text-disabled">
-          {result.ms < 1 ? "<1" : Math.round(result.ms)}ms
-        </span>
-      </div>
+function TestDetail({ result }: { result: TestResult }) {
+  if (result.passed && !result.stdout.trim()) return null;
 
+  return (
+    <VStack gap={2} paddingBlock={2}>
       {!result.passed && (
-        <dl className="mt-2.5 space-y-1.5 font-mono text-[12.5px]">
+        <MetadataList label={{ position: "start", width: 52 }}>
           {!result.hidden && (
-            <Row label="입력" value={displayArgs(result.input)} tone="muted" />
+            <MetadataListItem label="입력">
+              <Text type="code">{displayArgs(result.input)}</Text>
+            </MetadataListItem>
           )}
-          <Row label="기댓값" value={display(result.expected)} tone="pass" />
-          {result.error ? null : result.returnedNothing ? (
-            <Row
-              label="실제값"
-              value="반환값 없음 — return 문이 있는지 확인하세요"
-              tone="fail"
-            />
-          ) : (
-            <Row label="실제값" value={display(result.actual)} tone="fail" />
+          <MetadataListItem label="기댓값">
+            <Text type="code" color="accent">
+              {display(result.expected)}
+            </Text>
+          </MetadataListItem>
+          {!result.error && (
+            <MetadataListItem label="실제값">
+              <Text type="code">
+                {result.returnedNothing
+                  ? "반환값 없음 — return 문이 있는지 확인하세요"
+                  : display(result.actual)}
+              </Text>
+            </MetadataListItem>
           )}
-        </dl>
+        </MetadataList>
       )}
 
       {result.error && (
-        <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-md border border-error/25 bg-error/5 p-2.5 font-mono text-[12px] leading-relaxed text-red-vivid">
-          {result.error}
-        </pre>
+        <Banner status="error" title="예외 발생" container="card">
+          <Text type="code" display="block">
+            {result.error}
+          </Text>
+        </Banner>
       )}
 
       {result.stdout.trim() && (
-        <details className="mt-2">
-          <summary className="cursor-pointer text-[12px] text-disabled transition hover:text-secondary">
-            출력 보기
-          </summary>
-          <pre className="mt-1.5 overflow-x-auto whitespace-pre-wrap rounded-md bg-muted p-2.5 font-mono text-[12px] leading-relaxed text-secondary">
+        <VStack gap={1}>
+          <Text type="supporting">출력</Text>
+          <Text type="code" display="block" color="secondary">
             {result.stdout}
-          </pre>
-        </details>
+          </Text>
+        </VStack>
       )}
-    </li>
-  );
-}
-
-function Row({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: string;
-  tone: "muted" | "pass" | "fail";
-}) {
-  const color =
-    tone === "pass" ? "text-success" : tone === "fail" ? "text-error" : "text-primary/85";
-  return (
-    <div className="flex gap-3">
-      <dt className="w-12 shrink-0 text-disabled">{label}</dt>
-      <dd className={`min-w-0 flex-1 break-all ${color}`}>{value}</dd>
-    </div>
-  );
-}
-
-function Centered({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="grid h-full place-items-center px-4 py-8 text-center">
-      {children}
-    </div>
-  );
-}
-
-function Kbd({ children }: { children: React.ReactNode }) {
-  return (
-    <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] text-secondary">
-      {children}
-    </kbd>
-  );
-}
-
-function Spinner() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-4 animate-spin text-accent" aria-hidden>
-      <circle
-        cx="12"
-        cy="12"
-        r="9"
-        stroke="currentColor"
-        strokeWidth="3"
-        fill="none"
-        opacity="0.2"
-      />
-      <path
-        d="M21 12a9 9 0 0 0-9-9"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-      />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-3.5" fill="none" aria-hidden>
-      <path
-        d="m5 13 4 4L19 7"
-        stroke="currentColor"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-3.5" fill="none" aria-hidden>
-      <path
-        d="M6 6l12 12M18 6 6 18"
-        stroke="currentColor"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-      />
-    </svg>
+    </VStack>
   );
 }

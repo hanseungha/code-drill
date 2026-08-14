@@ -23,6 +23,25 @@ JavaScript와 Python을 지원하며, 채점 서버가 없습니다 — 제출�
 > 이 구조는 개인 연습용입니다. 신뢰할 수 없는 제출을 다루는 대회용 저지로 쓰려면
 > 서버 측 샌드박스가 따로 필요합니다.
 
+## 디자인 시스템
+
+UI는 Meta의 [Astryx](https://astryx.atmeta.com) 로 만들었습니다. 화면에 쓰인
+모든 요소가 Astryx 컴포넌트이고, Tailwind는 쓰지 않습니다.
+
+브랜드 테마는 `src/theme/codeDrill.ts` 하나로 정의됩니다. Astryx의 neutral
+테마를 `extends` 해서 액센트 색과 폰트 두 가지만 바꾸고, 나머지(간격, 반경,
+모션, 색상 램프, 문법 하이라이팅 팔레트)는 그대로 물려받습니다.
+
+```bash
+npm run theme        # 테마를 CSS/JS로 빌드 (src/theme/code-drill.*)
+npm run theme:check  # 산출물이 소스와 어긋나면 실패
+```
+
+`src/theme/code-drill.*` 는 생성 파일이므로 직접 고치지 마세요. 색을 바꾸려면
+`codeDrill.ts` 를 수정하고 `npm run theme` 를 실행합니다. 라이트/다크는
+`light-dark()` 토큰으로 처리되며, 에디터 색상도 `--color-syntax-*` 토큰에서
+읽어오므로 모드 전환을 그대로 따라갑니다.
+
 ## 개발
 
 ```bash
@@ -74,6 +93,8 @@ src/lib/problems/     문제 정의 (한 파일에 한 문제)
 src/lib/runner.ts     워커 수명 관리, 제한 시간, 결과 매핑
 src/lib/compare.ts    정답 비교 및 정규화
 src/lib/storage.ts    localStorage 기반 진행률과 코드 임시 저장
+src/theme/            브랜드 테마 소스와 생성된 CSS
+src/components/       화면 구성 (전부 Astryx 컴포넌트)
 public/workers/       브라우저에서 실제로 실행되는 채점기 두 개
 ```
 

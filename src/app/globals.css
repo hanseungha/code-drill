@@ -1,12 +1,10 @@
 /*
- * Layer order is the whole game here: Tailwind's reset must not win over
- * Astryx's, and the theme's token overrides must land after the component
- * styles they modify. This is the order Astryx documents for Tailwind projects.
+ * Layer order matters: the reset must land before component styles, and the
+ * theme's token overrides after them. Tailwind is gone — every screen is built
+ * from Astryx components, so the utility layer and its token bridge had no
+ * remaining consumers.
  */
-@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;
-
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/preflight.css" layer(base);
+@layer reset, astryx-base, astryx-theme, app;
 
 @import "@astryxdesign/core/reset.css";
 @import "@astryxdesign/core/astryx.css";
@@ -18,16 +16,23 @@
  */
 @import "../theme/code-drill.css";
 
-/* Maps Astryx tokens onto Tailwind utilities: bg-card, text-primary, rounded-lg… */
-@import "@astryxdesign/core/tailwind-theme.css";
-
-@import "tailwindcss/utilities.css" layer(utilities);
-
 /*
  * Slim scrollbars for the workspace panes. Token-backed so they follow the
  * active theme and color mode.
  */
-@layer components {
+@layer app {
+  /*
+   * With Tailwind's preflight gone, nothing declares the page's own font or
+   * background — AppShell paints its region, but the body behind it stayed
+   * transparent, so overscroll exposed the browser's white canvas in dark mode.
+   * Text and Heading set their own family; this only governs stray text.
+   */
+  body {
+    font-family: var(--font-family-body);
+    background: var(--color-background-body);
+    color: var(--color-text-primary);
+  }
+
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-border-emphasized) transparent;

@@ -1,3 +1,6 @@
+import { Badge } from "@astryxdesign/core/Badge";
+import { HStack, VStack } from "@astryxdesign/core/Layout";
+import { Heading, Text } from "@astryxdesign/core/Text";
 import { ProblemBrowser, type ProblemSummary } from "@/components/ProblemBrowser";
 import { allTags, problems } from "@/lib/problems";
 
@@ -13,22 +16,21 @@ const items: ProblemSummary[] = problems.map((p) => ({
 
 export default function Home() {
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 sm:py-14">
-      <section className="mb-10 sm:mb-14">
-        <p className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent ring-1 ring-accent/25">
-          <span className="size-1.5 rounded-full bg-accent" aria-hidden />
-          설치 없이 브라우저에서 바로 채점
-        </p>
-        <h1 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-          코딩테스트, 매일 한 문제씩 훈련하세요
-        </h1>
-        <p className="mt-3 max-w-xl text-pretty text-secondary">
-          JavaScript와 Python 코드를 브라우저 안에서 실행하고 테스트 케이스로
-          채점합니다. 로그인도, 서버도 필요 없습니다.
-        </p>
-      </section>
+    <VStack isScrollable height="100%" padding={6} hAlign="center" as="main">
+      <VStack gap={10} width="100%" maxWidth={960}>
+        <VStack gap={3}>
+          <HStack>
+            <Badge label="설치 없이 브라우저에서 바로 채점" variant="teal" />
+          </HStack>
+          <Heading level={1}>코딩테스트, 매일 한 문제씩 훈련하세요</Heading>
+          <Text color="secondary" textWrap="pretty">
+            JavaScript와 Python 코드를 브라우저 안에서 실행하고 테스트 케이스로
+            채점합니다. 로그인도, 서버도 필요 없습니다.
+          </Text>
+        </VStack>
 
-      <ProblemBrowser items={items} tags={allTags} />
-    </main>
+        <ProblemBrowser items={items} tags={allTags} />
+      </VStack>
+    </VStack>
   );
 }
