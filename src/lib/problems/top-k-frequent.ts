@@ -1,4 +1,5 @@
 import type { Problem } from "@/lib/types";
+import { withMinHeap } from "./snippets";
 
 export const topKFrequent: Problem = {
   slug: "top-k-frequent",
@@ -25,7 +26,7 @@ export const topKFrequent: Problem = {
   ],
   entry: { javascript: "topKFrequent", python: "top_k_frequent" },
   starter: {
-    javascript: `/**
+    javascript: withMinHeap(`/**
  * @param {number[]} nums
  * @param {number} k
  * @return {number[]}
@@ -33,8 +34,11 @@ export const topKFrequent: Problem = {
 function topKFrequent(nums, k) {
   // 여기에 코드를 작성하세요
 }
-`,
-    python: `def top_k_frequent(nums, k):
+`),
+    python: `import heapq
+
+
+def top_k_frequent(nums, k):
     # 여기에 코드를 작성하세요
     pass
 `,
