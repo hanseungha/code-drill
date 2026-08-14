@@ -3,164 +3,163 @@ import type { Week } from "@/lib/curriculum/types";
 export const w16: Week = {
   week: 16,
   phase: 3,
-  title: "DP 입문 (1차원)",
-  summary: "점화식을 세우는 절차를 손에 붙입니다. 상태 → 전이 → 초기값 → 순서.",
+  title: "BFS 최단 거리와 격자 탐색",
+  summary: "BFS가 왜 최단 거리인지 이해하고, 상태를 늘려 더 어려운 문제로.",
   concept: [
     {
       kind: "text",
-      body: "지난주에 그리디가 지는 걸 봤습니다. 후회 없는 선택을 하려면 모든 경우를 따져야 하는데, 그냥 따지면 지수 시간입니다. 동적 계획법(DP)은 **이미 계산한 하위 문제를 다시 계산하지 않음**으로써 그것을 다항 시간으로 만듭니다.",
-    },
-    {
-      kind: "text",
-      body: "DP를 쓸 수 있는 조건은 9주차 재귀에서 이미 봤습니다. 중복되는 하위 문제가 있고(피보나치), 하위 문제의 최적해로 전체 최적해를 만들 수 있으면 됩니다.",
-    },
-    {
-      kind: "heading",
-      body: "점화식 세우는 4단계",
-    },
-    {
-      kind: "text",
-      body: "DP가 어려운 이유는 아이디어가 매번 달라 보이기 때문인데, 절차는 항상 같습니다. 이 순서대로 종이에 쓰세요.",
-    },
-    {
-      kind: "list",
-      ordered: true,
-      items: [
-        "**상태 정의** — `dp[i]`가 무엇인지 한 문장으로. 여기서 대부분 판가름 납니다",
-        "**전이** — `dp[i]`를 더 작은 `dp`로 어떻게 표현하는가",
-        "**초기값** — 가장 작은 경우의 답을 직접 채웁니다",
-        "**계산 순서** — `dp[i]`를 구할 때 필요한 값이 이미 채워져 있도록",
-      ],
-    },
-    {
-      kind: "text",
-      body: "1번을 대충 넘기면 나머지가 전부 꼬입니다. '`dp[i]`는 i번째까지 봤을 때의 최댓값'처럼 **애매한 정의를 피하고**, '`dp[i]`는 i번째를 반드시 쓸 때의 최댓값'처럼 조건을 붙여 정확히 적으세요.",
-    },
-    {
-      kind: "heading",
-      body: "탑다운과 바텀업",
-    },
-    {
-      kind: "table",
-      headers: ["", "탑다운 (메모이제이션)", "바텀업 (타뷸레이션)"],
-      rows: [
-        ["형태", "재귀 + 캐시", "반복문 + 배열"],
-        ["장점", "점화식을 그대로 옮기면 됨", "스택 걱정 없음, 보통 더 빠름"],
-        ["단점", "재귀 깊이 제한", "계산 순서를 직접 정해야 함"],
-        ["언제", "상태가 듬성듬성할 때", "상태를 전부 채울 때"],
-      ],
-    },
-    {
-      kind: "text",
-      body: "처음에는 탑다운으로 점화식을 확인하고, 통과하면 바텀업으로 바꿔 보는 연습을 권합니다. 둘의 대응 관계가 보이기 시작하면 DP가 훨씬 쉬워집니다.",
+      body: "BFS는 시작점에서 가까운 순서대로 방문합니다. 거리 1인 곳을 전부 본 다음 거리 2를 보고, 그다음 거리 3을 봅니다. 그래서 **어떤 정점에 처음 도착한 순간이 곧 최단 거리**입니다. 나중에 다른 경로로 다시 도달해도 그 경로는 반드시 더 길거나 같습니다.",
     },
     {
       kind: "trap",
-      title: "초기값을 0으로 두면 '불가능'과 '0개'가 구분되지 않습니다",
-      body: "최솟값 DP에서 배열을 0으로 초기화하면, 아직 계산 안 된 칸이 '0개로 만들 수 있다'로 읽혀 답이 0이 됩니다. 불가능을 뜻하는 값(`Infinity`, `-1`, `n+1`)으로 채우고 시작하세요. 거스름돈 문제에서 특히 자주 나오는 실수입니다.",
+      title: "이 성질은 모든 간선의 가중치가 같을 때만 성립합니다",
+      body: "간선마다 비용이 다르면 '가까운 순서'가 '적은 홉 수'와 달라져 BFS는 최단을 보장하지 못합니다. 그때는 21주차의 다익스트라가 필요합니다. 격자 문제는 한 칸 이동 비용이 모두 1이라 BFS가 통합니다.",
     },
     {
       kind: "heading",
-      body: "대표 점화식",
+      body: "다중 시작점 BFS",
     },
     {
-      kind: "table",
-      headers: ["문제", "상태", "전이"],
-      rows: [
-        ["계단 오르기", "`dp[i]` = i번째 칸에 도달하는 방법 수", "`dp[i] = dp[i-1] + dp[i-2]`"],
-        ["도둑질", "`dp[i]` = i번째 집까지의 최대 금액", "`dp[i] = max(dp[i-1], dp[i-2] + a[i])`"],
-        ["거스름돈", "`dp[x]` = x원을 만드는 최소 동전 수", "`dp[x] = min(dp[x-c] + 1)`"],
-        ["LIS", "`dp[i]` = i를 마지막으로 쓰는 최장 길이", "`dp[i] = max(dp[j] + 1)`, `j < i`이고 `a[j] < a[i]`"],
+      kind: "text",
+      body: "'모든 익은 토마토에서 동시에 퍼진다'거나 '가장 가까운 병원까지의 거리'처럼 출발점이 여러 개인 문제가 있습니다. 시작점마다 BFS를 돌리면 `O(시작점 수 × V)`인데, **처음부터 모든 시작점을 큐에 함께 넣으면** 한 번의 BFS로 끝납니다.",
+    },
+    {
+      kind: "text",
+      body: "이게 성립하는 이유도 같습니다. 큐에 여러 시작점이 거리 0으로 들어 있으면, BFS는 여전히 거리 순서대로 퍼지고 각 칸은 가장 가까운 시작점으로부터의 거리를 갖게 됩니다.",
+    },
+    {
+      kind: "heading",
+      body: "상태를 늘린 BFS",
+    },
+    {
+      kind: "text",
+      body: "이번 주에서 가장 중요한 개념입니다. '벽을 한 번 부술 수 있다'는 조건이 붙으면, 같은 칸이라도 **벽을 이미 부쉈는지 아닌지에 따라 상황이 다릅니다**. 그러니 방문 배열도 위치만이 아니라 `(위치, 남은 기회)`로 관리해야 합니다.",
+    },
+    {
+      kind: "list",
+      items: [
+        "방문 배열의 차원이 곧 '상태'입니다 — `visited[x][y][k]`",
+        "상태가 늘면 정점 수가 곱해집니다. 기회가 1번이면 정점이 2배가 될 뿐이라 여전히 빠릅니다",
+        "열쇠 여러 개를 모으는 문제라면 비트마스크로 상태를 표현합니다 (4주차)",
       ],
+    },
+    {
+      kind: "text",
+      body: "이 아이디어를 알아채는 신호는 '~을 한 번 할 수 있다', '~을 k번까지 쓸 수 있다' 같은 조건입니다. 위치만으로 방문을 관리하면 최단 경로를 놓칩니다.",
+    },
+    {
+      kind: "heading",
+      body: "추상 그래프",
+    },
+    {
+      kind: "text",
+      body: "격자만 그래프인 것은 아닙니다. '한 글자만 바꿔 다른 단어로 갈 수 있다'면 단어가 정점이고 그 변환이 간선입니다. 문제에 지도가 없어도 '상태와 상태 사이의 이동'이 보이면 BFS를 꺼낼 수 있습니다.",
     },
   ],
   patterns: [
     {
-      title: "바텀업 기본형",
+      title: "격자 BFS 최단 거리",
       code: {
-        javascript: `const dp = new Array(n + 1).fill(0);
-dp[0] = 1;
-dp[1] = 1;
-for (let i = 2; i <= n; i++) {
-  dp[i] = dp[i - 1] + dp[i - 2];
-}
-return dp[n];`,
-        python: `dp = [0] * (n + 1)
-dp[0] = dp[1] = 1
-for i in range(2, n + 1):
-    dp[i] = dp[i - 1] + dp[i - 2]
-return dp[n]`,
-      },
-    },
-    {
-      title: "최솟값 DP — 불가능한 값으로 초기화",
-      code: {
-        javascript: `const dp = new Array(amount + 1).fill(Infinity);
-dp[0] = 0;
-for (let x = 1; x <= amount; x++) {
-  for (const c of coins) {
-    if (c <= x) dp[x] = Math.min(dp[x], dp[x - c] + 1);
+        javascript: `const dist = Array.from({ length: rows }, () => new Array(cols).fill(-1));
+const queue = [[sx, sy]];
+let head = 0;
+dist[sx][sy] = 0;
+while (head < queue.length) {
+  const [x, y] = queue[head++];
+  for (let d = 0; d < 4; d++) {
+    const nx = x + DX[d];
+    const ny = y + DY[d];
+    if (nx < 0 || ny < 0 || nx >= rows || ny >= cols) continue;
+    if (grid[nx][ny] === 1 || dist[nx][ny] !== -1) continue;
+    dist[nx][ny] = dist[x][y] + 1;
+    queue.push([nx, ny]);
   }
-}
-return dp[amount] === Infinity ? -1 : dp[amount];`,
-        python: `INF = float("inf")
-dp = [INF] * (amount + 1)
-dp[0] = 0
-for x in range(1, amount + 1):
-    for c in coins:
-        if c <= x:
-            dp[x] = min(dp[x], dp[x - c] + 1)
-return -1 if dp[amount] == INF else dp[amount]`,
+}`,
+        python: `from collections import deque
+
+dist = [[-1] * cols for _ in range(rows)]
+queue = deque([(sx, sy)])
+dist[sx][sy] = 0
+while queue:
+    x, y = queue.popleft()
+    for dx, dy in DIRS:
+        nx, ny = x + dx, y + dy
+        if not (0 <= nx < rows and 0 <= ny < cols):
+            continue
+        if grid[nx][ny] == 1 or dist[nx][ny] != -1:
+            continue
+        dist[nx][ny] = dist[x][y] + 1
+        queue.append((nx, ny))`,
       },
     },
     {
-      title: "탑다운 (메모이제이션)",
-      note: "점화식을 그대로 옮길 수 있어 처음 검증할 때 편합니다.",
+      title: "다중 시작점 BFS",
+      note: "모든 시작점을 거리 0으로 큐에 미리 넣어두는 것이 전부입니다.",
       code: {
-        javascript: `const memo = new Map();
-function solve(i) {
-  if (i <= 1) return 1;
-  if (memo.has(i)) return memo.get(i);
-  const value = solve(i - 1) + solve(i - 2);
-  memo.set(i, value);
-  return value;
+        javascript: `const queue = [];
+for (let i = 0; i < rows; i++) {
+  for (let j = 0; j < cols; j++) {
+    if (grid[i][j] === 1) {
+      dist[i][j] = 0;
+      queue.push([i, j]);
+    }
+  }
 }`,
-        python: `from functools import lru_cache
-
-@lru_cache(maxsize=None)
-def solve(i):
-    if i <= 1:
-        return 1
-    return solve(i - 1) + solve(i - 2)`,
+        python: `queue = deque()
+for i in range(rows):
+    for j in range(cols):
+        if grid[i][j] == 1:
+            dist[i][j] = 0
+            queue.append((i, j))`,
+      },
+    },
+    {
+      title: "상태를 추가한 BFS",
+      note: "visited의 마지막 차원이 '남은 기회'입니다.",
+      code: {
+        javascript: `// visited[x][y][k] — k는 남은 부수기 횟수
+const visited = Array.from({ length: rows }, () =>
+  Array.from({ length: cols }, () => new Array(K + 1).fill(false)),
+);
+// 벽이면 기회를 하나 쓰고 진행
+if (grid[nx][ny] === 1 && k > 0 && !visited[nx][ny][k - 1]) {
+  visited[nx][ny][k - 1] = true;
+  queue.push([nx, ny, k - 1, step + 1]);
+}`,
+        python: `# visited[x][y][k] — k는 남은 부수기 횟수
+visited = [[[False] * (K + 1) for _ in range(cols)] for _ in range(rows)]
+# 벽이면 기회를 하나 쓰고 진행
+if grid[nx][ny] == 1 and k > 0 and not visited[nx][ny][k - 1]:
+    visited[nx][ny][k - 1] = True
+    queue.append((nx, ny, k - 1, step + 1))`,
       },
     },
   ],
   problems: [
     {
-      slug: "climbing-stairs",
-      title: "계단 오르기",
+      title: "미로 최단 거리",
       role: "워밍업",
-      teaches: "가장 단순한 점화식",
+      teaches: "격자 BFS 템플릿",
     },
     {
-      title: "도둑질",
+      title: "토마토 익히기",
       role: "핵심",
-      teaches: "선택과 미선택을 상태로 다루기",
+      teaches: "다중 시작점 BFS",
     },
     {
-      title: "정수 삼각형",
+      title: "단어 변환",
       role: "핵심",
-      teaches: "계산 순서를 뒤집으면 쉬워지는 경우",
+      teaches: "지도가 없는 추상 그래프에서의 BFS",
     },
     {
-      title: "최장 증가 부분 수열",
+      title: "벽 부수고 이동하기",
       role: "도전",
-      teaches: "O(n²) 풀이 후 이분 탐색으로 O(n log n)까지",
+      teaches: "방문 배열에 상태 차원 추가하기",
     },
   ],
   selfCheck: [
-    "지금 푼 문제에서 `dp[i]`가 무엇인지 한 문장으로 말할 수 있는가?",
-    "최솟값 DP에서 배열을 0으로 초기화하면 왜 틀리는가?",
-    "탑다운과 바텀업 중 어느 쪽을 언제 고르는가?",
+    "BFS가 최단 거리를 보장하는 이유와, 그 보장이 깨지는 조건은?",
+    "시작점이 100개일 때 BFS를 100번 돌리지 않아도 되는 이유는?",
+    "'벽을 한 번 부술 수 있다'는 조건에서 방문 배열이 어떻게 달라져야 하는가?",
   ],
 };

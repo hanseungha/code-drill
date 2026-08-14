@@ -3,152 +3,300 @@ import type { Week } from "@/lib/curriculum/types";
 export const w23: Week = {
   week: 23,
   phase: 4,
-  title: "고급 기법",
-  summary: "알아두면 어려운 문제가 갑자기 쉬워지는 도구 모음.",
+  title: "트리 DP와 문자열 매칭",
+  summary: "마지막 개념 주차. 모르면 아예 못 푸는 도구 두 가지.",
   concept: [
     {
       kind: "text",
-      body: "마지막 개념 주차입니다. 여기 나오는 것들은 매번 쓰이지는 않지만, 필요한 순간에 모르면 아예 못 푸는 도구들입니다.",
+      body: "마지막 개념 주차입니다. 여기 나오는 것들은 매번 쓰이지는 않지만, 필요한 순간에 모르면 아예 못 푸는 도구들입니다. 앞의 22주를 다 거쳤다면 둘 다 '이미 아는 것의 조합'으로 읽힐 것입니다.",
     },
     {
       kind: "heading",
-      body: "누적합과 차분 배열",
+      body: "트리 DP",
     },
     {
       kind: "text",
-      body: "1주차에서 누적합을 잠깐 봤습니다. 미리 앞에서부터 더해두면 어떤 구간 합이든 뺄셈 한 번으로 답합니다. **차분 배열**은 그 반대입니다 — 구간에 값을 여러 번 더해야 할 때 씁니다.",
+      body: "트리 DP는 이름 그대로 트리 위에서 하는 DP입니다. 19~20주차 DP는 `dp[i]`, `dp[i][j]` 처럼 배열 위에서 왼쪽에서 오른쪽으로 채웠습니다. 트리에서는 **자식의 답을 모아 부모의 답을 만듭니다.** 즉 후위 순회(자식 먼저, 자기 나중) 순서로 채웁니다.",
     },
     {
       kind: "text",
-      body: "구간 `[l, r]`에 x를 더하려면, 차분 배열의 `l`에 `+x`, `r+1`에 `-x`만 기록합니다. 모든 갱신을 마친 뒤 누적합을 한 번 취하면 최종 배열이 나옵니다. 갱신 하나가 `O(1)`이라, 갱신이 많고 조회는 마지막에 한 번인 문제에서 `O(n·q)`를 `O(n+q)`로 줄입니다.",
+      body: "왜 이게 성립하냐면, 트리에는 사이클이 없기 때문입니다. 어떤 정점의 답이 자기 서브트리에만 의존하므로 서로를 순환 참조하지 않습니다. 14주차에서 트리 재귀를 쓸 때 이미 이 구조를 썼습니다 — 최대 깊이는 `1 + max(왼쪽 깊이, 오른쪽 깊이)` 였고, 그게 가장 단순한 트리 DP입니다.",
     },
     {
       kind: "table",
-      headers: ["상황", "도구", "효과"],
+      headers: ["구하려는 것", "상태", "전이"],
       rows: [
-        ["구간 합을 여러 번 조회, 값은 안 바뀜", "누적합", "조회 `O(1)`"],
-        ["구간에 값을 여러 번 더함, 조회는 마지막에", "차분 배열", "갱신 `O(1)`"],
-        ["갱신과 조회가 뒤섞임", "세그먼트 트리 (범위 밖)", "둘 다 `O(log n)`"],
+        ["서브트리 크기", "`size[v]`", "`1 + Σ size[child]`"],
+        ["서브트리 최대 깊이", "`depth[v]`", "`1 + max(depth[child])`"],
+        ["트리의 지름", "각 정점에서 가장 깊은 자식 둘", "`max(d1 + d2)`"],
+        ["최대 독립 집합", "`dp[v][0]`, `dp[v][1]`", "고르면 자식은 못 고름"],
       ],
     },
     {
-      kind: "heading",
-      body: "비트마스크",
+      kind: "text",
+      body: "**최대 독립 집합**이 트리 DP의 전형입니다. 서로 인접하지 않게 정점을 골라 가중치 합을 최대로 만드는 문제인데, 상태를 '이 정점을 골랐는가'로 하나 더 두면 풀립니다. `dp[v][1]` 은 v를 골랐을 때이므로 자식은 반드시 안 고른 값 `dp[child][0]` 을 더하고, `dp[v][0]` 은 자식이 자유로우니 둘 중 큰 값을 더합니다. 16주차 '도둑질'을 트리로 옮긴 것과 같습니다.",
     },
     {
       kind: "text",
-      body: "정수 하나의 각 비트를 '포함/미포함'으로 읽으면 집합을 정수로 표현할 수 있습니다. 원소가 20개 이하일 때 부분집합 전체를 `0`부터 `2ⁿ-1`까지의 정수로 순회할 수 있어, 백트래킹 대신 반복문 하나로 완전 탐색이 됩니다.",
-    },
-    {
-      kind: "text",
-      body: "13주차의 '상태를 늘린 BFS'와도 이어집니다. 열쇠를 여러 개 모으는 문제에서 '어떤 열쇠를 가졌는가'를 비트마스크 하나로 표현하면 `visited[x][y][mask]`가 됩니다.",
+      body: "**트리의 지름**은 가장 먼 두 정점 사이의 거리입니다. 각 정점을 최고점으로 삼는 경로만 생각하면, 그 정점에서 내려가는 가장 깊은 두 갈래를 더한 값이 후보입니다. 모든 정점에서 이 후보를 구해 최댓값을 취하면 답입니다 — 후위 순회 한 번, `O(n)`입니다.",
     },
     {
       kind: "trap",
-      title: "비트 연산자는 우선순위가 비교 연산자보다 낮습니다",
-      body: "`mask & 1 << i == 0` 은 의도대로 동작하지 않습니다. 파이썬과 JavaScript 모두 `==`가 먼저 묶여 버립니다. 비트 연산은 **항상 괄호로 감싸세요**: `(mask & (1 << i)) == 0`. 에러 없이 조용히 틀리는 종류의 버그입니다.",
+      title: "루트 없는 트리에서는 부모로 되돌아가는 것을 막아야 합니다",
+      body: "간선 목록으로 주어진 트리는 인접 리스트가 양방향입니다. 자식을 순회할 때 부모를 걸러내지 않으면 부모↔자식을 무한히 오갑니다. 재귀 인자에 `parent` 를 넘겨 `if (next === parent) continue;` 로 건너뛰거나, 15주차처럼 `visited` 를 쓰세요. 트리는 사이클이 없으므로 부모 하나만 막으면 충분합니다.",
+    },
+    {
+      kind: "trap",
+      title: "정점이 많으면 재귀 깊이에서 먼저 터집니다",
+      body: "한 줄로 늘어선 트리(사실상 연결 리스트)는 깊이가 정점 수와 같습니다. 파이썬 기본 재귀 한도는 1,000이라 `n`이 10만이면 `RecursionError` 입니다. `sys.setrecursionlimit(300000)` 으로 올리거나, 13주차에서 배운 대로 명시적 스택으로 바꾸세요. 브라우저의 JavaScript도 대략 1만 프레임 근처에서 스택이 넘칩니다.",
     },
     {
       kind: "heading",
-      body: "좌표 압축",
+      body: "문자열 매칭 — KMP",
     },
     {
       kind: "text",
-      body: "값의 범위가 10억인데 실제로 등장하는 서로 다른 값은 1,000개뿐인 경우가 있습니다. 이때 값을 정렬해 순위로 바꾸면 배열 크기를 1,000으로 줄일 수 있습니다. 값 자체가 아니라 **대소 관계만 필요할 때** 쓰는 기법입니다.",
+      body: "긴 문자열에서 패턴을 찾을 때, 어긋날 때마다 처음부터 다시 비교하면 `O(nm)`입니다. KMP는 패턴 자신의 접두사-접미사 정보를 미리 계산해두어 **어긋나도 본문 포인터를 되돌리지 않게** 만들어 `O(n+m)`으로 줄입니다.",
+    },
+    {
+      kind: "text",
+      body: "핵심은 실패 함수(부분 일치 테이블)입니다. `fail[i]` 는 '패턴의 앞 `i+1` 글자 중, 접두사이면서 동시에 접미사인 가장 긴 것의 길이'입니다. 어긋났을 때 이 길이만큼은 이미 맞춰져 있다는 뜻이므로, 패턴 포인터를 0이 아니라 `fail[j-1]` 로 되돌리면 됩니다.",
+    },
+    {
+      kind: "text",
+      body: "실전에서는 내장 `includes` / `in` 으로 충분한 경우가 많습니다. 다만 실패 함수라는 개념 자체가 다른 문자열 문제로 응용되므로 한 번은 직접 만들어 보길 권합니다.",
     },
     {
       kind: "heading",
-      body: "문자열 매칭 (KMP)",
+      body: "팰린드롬 — 매내처",
     },
     {
       kind: "text",
-      body: "긴 문자열에서 패턴을 찾을 때, 어긋날 때마다 처음부터 다시 비교하면 `O(nm)`입니다. KMP는 패턴 자신의 접두사-접미사 정보를 미리 계산해두어 **어긋나도 되돌아가지 않게** 만들어 `O(n+m)`으로 줄입니다.",
+      body: "가장 긴 팰린드롬 부분 문자열은 각 위치를 중심으로 양옆으로 넓혀 보면 `O(n²)`에 풀립니다. 대부분의 문제는 이걸로 통과합니다. **매내처(Manacher)** 는 같은 답을 `O(n)`에 구합니다 — 이미 구한 팰린드롬 안쪽은 대칭이므로, 그 대칭성으로 반대편의 결과를 재사용해 중복 확장을 건너뜁니다.",
     },
     {
       kind: "text",
-      body: "실전에서는 내장 `includes`/`in`으로 충분한 경우가 많습니다. 다만 실패 함수(부분 일치 테이블)의 개념 자체가 다른 문자열 문제에도 응용되므로 한 번은 만들어 보길 권합니다.",
+      body: "구현의 첫 관문은 홀짝입니다. `aba` 는 중심이 글자이고 `abba` 는 중심이 글자 사이라 처리가 갈립니다. 문자 사이사이에 `#` 을 끼워 `#a#b#b#a#` 로 만들면 길이가 항상 홀수가 되어 경우가 하나로 합쳐집니다. 이 변환 뒤 반지름 배열 `p[i]` 의 최댓값이 곧 원래 문자열에서의 팰린드롬 길이입니다.",
+    },
+    {
+      kind: "text",
+      body: "매내처는 코딩 테스트에서 자주 나오지는 않습니다. 다만 '이미 계산한 대칭 구조를 재사용한다'는 발상은 값어치가 있고, 중심 확장 `O(n²)` 이 시간 초과가 나는 제한(`n ≥ 10만`)에서는 이것 말고 선택지가 없습니다.",
     },
   ],
   patterns: [
     {
-      title: "차분 배열로 구간 갱신",
+      title: "트리 DP — 최대 독립 집합",
+      note: "dp[v][1]은 v를 고른 경우. 자식은 반드시 고르지 않은 값을 더합니다.",
       code: {
-        javascript: `const diff = new Array(n + 1).fill(0);
-for (const [l, r, x] of updates) {
-  diff[l] += x;
-  diff[r + 1] -= x;
-}
-const result = new Array(n).fill(0);
-let running = 0;
-for (let i = 0; i < n; i++) {
-  running += diff[i];
-  result[i] = running;
-}`,
-        python: `diff = [0] * (n + 1)
-for l, r, x in updates:
-    diff[l] += x
-    diff[r + 1] -= x
+        javascript: `// adj: 양방향 인접 리스트, weight: 정점 가중치
+const dp = Array.from({ length: n }, () => [0, 0]);
 
-result = []
-running = 0
-for i in range(n):
-    running += diff[i]
-    result.append(running)`,
-      },
-    },
-    {
-      title: "비트마스크로 부분집합 전체 순회",
-      note: "괄호를 빠뜨리지 마세요. n이 20이면 약 100만 번입니다.",
-      code: {
-        javascript: `for (let mask = 0; mask < (1 << n); mask++) {
-  const subset = [];
-  for (let i = 0; i < n; i++) {
-    if ((mask & (1 << i)) !== 0) subset.push(items[i]);
+function dfs(v, parent) {
+  dp[v][0] = 0;
+  dp[v][1] = weight[v];
+  for (const next of adj[v]) {
+    if (next === parent) continue;
+    dfs(next, v);
+    dp[v][0] += Math.max(dp[next][0], dp[next][1]);
+    dp[v][1] += dp[next][0];
   }
-  // subset 처리
-}`,
-        python: `for mask in range(1 << n):
-    subset = [items[i] for i in range(n) if (mask & (1 << i)) != 0]
-    # subset 처리`,
+}
+
+dfs(0, -1);
+const answer = Math.max(dp[0][0], dp[0][1]);`,
+        python: `import sys
+sys.setrecursionlimit(300000)
+
+dp = [[0, 0] for _ in range(n)]
+
+def dfs(v, parent):
+    dp[v][0] = 0
+    dp[v][1] = weight[v]
+    for nxt in adj[v]:
+        if nxt == parent:
+            continue
+        dfs(nxt, v)
+        dp[v][0] += max(dp[nxt][0], dp[nxt][1])
+        dp[v][1] += dp[nxt][0]
+
+dfs(0, -1)
+answer = max(dp[0][0], dp[0][1])`,
       },
     },
     {
-      title: "좌표 압축",
+      title: "트리의 지름",
+      note: "각 정점에서 내려가는 가장 깊은 두 갈래를 더한 값이 그 정점을 지나는 최장 경로입니다.",
       code: {
-        javascript: `const sorted = [...new Set(values)].sort((a, b) => a - b);
-const rank = new Map(sorted.map((v, i) => [v, i]));
-const compressed = values.map((v) => rank.get(v));`,
-        python: `sorted_values = sorted(set(values))
-rank = {v: i for i, v in enumerate(sorted_values)}
-compressed = [rank[v] for v in values]`,
+        javascript: `let best = 0;
+
+function depth(v, parent) {
+  let first = 0;
+  let second = 0;          // 가장 깊은 둘
+  for (const next of adj[v]) {
+    if (next === parent) continue;
+    const d = depth(next, v) + 1;
+    if (d > first) [first, second] = [d, first];
+    else if (d > second) second = d;
+  }
+  best = Math.max(best, first + second);
+  return first;
+}
+
+depth(0, -1);`,
+        python: `best = 0
+
+def depth(v, parent):
+    global best
+    first = second = 0          # 가장 깊은 둘
+    for nxt in adj[v]:
+        if nxt == parent:
+            continue
+        d = depth(nxt, v) + 1
+        if d > first:
+            first, second = d, first
+        elif d > second:
+            second = d
+    best = max(best, first + second)
+    return first
+
+depth(0, -1)`,
+      },
+    },
+    {
+      title: "KMP — 실패 함수와 검색",
+      note: "본문 포인터 i는 절대 되돌아가지 않습니다. 그래서 O(n+m)입니다.",
+      code: {
+        javascript: `function buildFail(pattern) {
+  const fail = new Array(pattern.length).fill(0);
+  let j = 0;
+  for (let i = 1; i < pattern.length; i++) {
+    while (j > 0 && pattern[i] !== pattern[j]) j = fail[j - 1];
+    if (pattern[i] === pattern[j]) fail[i] = ++j;
+  }
+  return fail;
+}
+
+function search(text, pattern) {
+  const fail = buildFail(pattern);
+  const found = [];
+  let j = 0;
+  for (let i = 0; i < text.length; i++) {
+    while (j > 0 && text[i] !== pattern[j]) j = fail[j - 1];
+    if (text[i] === pattern[j]) {
+      if (++j === pattern.length) {
+        found.push(i - j + 1);
+        j = fail[j - 1];
+      }
+    }
+  }
+  return found;
+}`,
+        python: `def build_fail(pattern):
+    fail = [0] * len(pattern)
+    j = 0
+    for i in range(1, len(pattern)):
+        while j > 0 and pattern[i] != pattern[j]:
+            j = fail[j - 1]
+        if pattern[i] == pattern[j]:
+            j += 1
+            fail[i] = j
+    return fail
+
+
+def search(text, pattern):
+    fail = build_fail(pattern)
+    found = []
+    j = 0
+    for i, ch in enumerate(text):
+        while j > 0 and ch != pattern[j]:
+            j = fail[j - 1]
+        if ch == pattern[j]:
+            j += 1
+            if j == len(pattern):
+                found.append(i - j + 1)
+                j = fail[j - 1]
+    return found`,
+      },
+    },
+    {
+      title: "매내처 — 가장 긴 팰린드롬",
+      note: "`#`을 끼워 길이를 홀수로 통일합니다. p[i]가 곧 원래 문자열에서의 팰린드롬 길이입니다.",
+      code: {
+        javascript: `function longestPalindrome(s) {
+  const t = "#" + [...s].join("#") + "#";
+  const p = new Array(t.length).fill(0);
+  let center = 0;
+  let right = 0;             // 현재 가장 오른쪽까지 뻗은 팰린드롬
+
+  for (let i = 0; i < t.length; i++) {
+    if (i < right) p[i] = Math.min(right - i, p[2 * center - i]);
+    while (
+      i - p[i] - 1 >= 0 &&
+      i + p[i] + 1 < t.length &&
+      t[i - p[i] - 1] === t[i + p[i] + 1]
+    ) {
+      p[i]++;
+    }
+    if (i + p[i] > right) [center, right] = [i, i + p[i]];
+  }
+
+  let best = 0;
+  let at = 0;
+  for (let i = 0; i < p.length; i++) {
+    if (p[i] > best) [best, at] = [p[i], i];
+  }
+  const start = (at - best) / 2;
+  return s.slice(start, start + best);
+}`,
+        python: `def longest_palindrome(s):
+    t = "#" + "#".join(s) + "#"
+    p = [0] * len(t)
+    center = right = 0        # 현재 가장 오른쪽까지 뻗은 팰린드롬
+
+    for i in range(len(t)):
+        if i < right:
+            p[i] = min(right - i, p[2 * center - i])
+        while (
+            i - p[i] - 1 >= 0
+            and i + p[i] + 1 < len(t)
+            and t[i - p[i] - 1] == t[i + p[i] + 1]
+        ):
+            p[i] += 1
+        if i + p[i] > right:
+            center, right = i, i + p[i]
+
+    best = max(p)
+    at = p.index(best)
+    start = (at - best) // 2
+    return s[start:start + best]`,
       },
     },
   ],
   problems: [
     {
-      title: "구간 합 쿼리",
+      title: "서브트리의 크기",
       role: "워밍업",
-      teaches: "누적합 복습과 2차원으로의 확장",
+      teaches: "자식의 답을 모아 부모의 답을 만드는 순서",
     },
     {
-      title: "부분집합 비트마스크 순회",
+      title: "트리의 지름",
       role: "핵심",
-      teaches: "정수 하나로 집합 표현하기",
-    },
-    {
-      title: "겹치는 구간 최댓값",
-      role: "핵심",
-      teaches: "차분 배열로 구간 갱신을 O(1)에",
+      teaches: "각 정점에서 가장 깊은 두 갈래를 합치기",
     },
     {
       title: "부분 문자열 찾기 (KMP)",
-      role: "도전",
+      role: "핵심",
       teaches: "실패 함수와 되돌아가지 않는 비교",
+    },
+    {
+      title: "가장 긴 팰린드롬 부분 문자열",
+      role: "도전",
+      teaches: "중심 확장에서 매내처로 — 대칭성 재사용",
     },
   ],
   selfCheck: [
-    "누적합과 차분 배열은 각각 어떤 상황에서 쓰는가?",
-    "`mask & 1 << i == 0` 이 왜 위험한가?",
-    "좌표 압축이 필요해지는 조건은 무엇인가?",
+    "트리 DP를 후위 순회 순서로 채우는 이유는?",
+    "`dp[v][1]` 을 쓸 때 자식에서 `dp[child][0]` 만 더하는 이유는?",
+    "KMP의 실패 함수 `fail[i]` 는 정확히 무엇을 담고 있는가?",
   ],
 };

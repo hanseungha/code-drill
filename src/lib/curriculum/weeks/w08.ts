@@ -3,143 +3,150 @@ import type { Week } from "@/lib/curriculum/types";
 export const w08: Week = {
   week: 8,
   phase: 2,
-  title: "이분 탐색",
-  summary: "매번 절반을 버립니다. 그리고 '답' 자체를 탐색하는 법까지.",
+  title: "투 포인터와 슬라이딩 윈도우",
+  summary: "이중 반복문을 한 번의 순회로 접는 기술입니다.",
   concept: [
     {
       kind: "text",
-      body: "정렬된 배열에서 값을 찾을 때, 가운데를 보고 목표보다 크면 오른쪽 절반을 통째로 버립니다. 매번 후보가 절반으로 줄어드니 `O(log n)`입니다. 100만 개에서 20번이면 끝납니다.",
+      body: "배열에서 '어떤 구간' 또는 '어떤 두 원소'를 찾는 문제는 순진하게 짜면 모든 쌍을 보게 되어 `O(n²)`입니다. 투 포인터는 포인터 두 개를 두되 **되돌아가지 않게** 움직여서 이를 `O(n)`으로 만듭니다.",
     },
     {
       kind: "text",
-      body: "쓰기는 쉬운데 정확히 쓰기가 어렵습니다. 경계 처리를 한 글자만 틀려도 무한 루프에 빠지거나 답을 하나 놓칩니다. 그래서 **한 가지 형태를 정해서 외우는 편**을 권합니다.",
+      body: "왜 `O(n)`인지가 중요합니다. 반복문이 중첩돼 보여도, 각 포인터가 배열을 최대 한 번씩만 훑고 끝나기 때문에 전체 이동 횟수가 `2n`을 넘지 않습니다. 이 논리를 스스로 설명할 수 있으면 이 주는 성공입니다.",
+    },
+    {
+      kind: "heading",
+      body: "형태 1 — 양끝 투 포인터",
+    },
+    {
+      kind: "text",
+      body: "**정렬된** 배열에서 합이 목표값인 두 수를 찾을 때 씁니다. 양끝에서 시작해 합이 크면 오른쪽을 당기고, 작으면 왼쪽을 밉니다. 정렬돼 있다는 사실이 '이 방향으로 움직이면 합이 커진다/작아진다'를 보장해 주기 때문에 성립합니다.",
     },
     {
       kind: "trap",
-      title: "무한 루프를 만드는 경계 처리",
-      body: "`while (lo < hi)`에서 `hi = mid`로 좁히는 형태를 쓴다면 `mid`는 반드시 내림(`Math.floor`)이어야 합니다. 올림을 쓰면 `lo`와 `hi`가 1 차이일 때 `mid === hi`가 되어 영원히 줄지 않습니다. 반대로 `lo = mid`로 좁히는 형태에서는 올림을 써야 합니다. 둘을 섞지 마세요.",
+      title: "정렬되지 않은 배열에 양끝 투 포인터를 쓰면 틀립니다",
+      body: "정렬이 전제입니다. 인덱스를 답으로 요구하는 문제에서 정렬하면 원래 인덱스가 사라지므로, 그때는 투 포인터가 아니라 해시(5주차)를 써야 합니다. 5주차 `두 수의 합`이 해시로 풀리는 이유가 이것입니다.",
     },
     {
       kind: "heading",
-      body: "lower bound와 upper bound",
+      body: "형태 2 — 슬라이딩 윈도우",
     },
     {
       kind: "text",
-      body: "'값이 있는가'보다 실전에서 더 자주 쓰이는 건 **삽입 위치**입니다. `lower bound`는 target 이상인 첫 위치, `upper bound`는 target 초과인 첫 위치입니다. 이 둘을 빼면 target의 개수가 나옵니다.",
-    },
-    {
-      kind: "table",
-      headers: ["원하는 것", "JavaScript", "Python"],
-      rows: [
-        ["target 이상인 첫 위치", "직접 구현", "`bisect_left(a, t)`"],
-        ["target 초과인 첫 위치", "직접 구현", "`bisect_right(a, t)`"],
-        ["target의 개수", "두 위치의 차", "`bisect_right - bisect_left`"],
-      ],
-    },
-    {
-      kind: "heading",
-      body: "답을 이분 탐색하기 (파라메트릭 서치)",
-    },
-    {
-      kind: "text",
-      body: "이번 주의 진짜 무기입니다. 배열이 아니라 **답의 범위**를 이분 탐색합니다. '길이 x로 자르면 조건을 만족하는가?'처럼 **예/아니오로 답할 수 있고, x가 커질수록 답이 한 방향으로만 바뀌는** 문제에 씁니다.",
-    },
-    {
-      kind: "text",
-      body: "예를 들어 '랜선을 잘라 N개 이상 만들 수 있는 최대 길이'는, 길이가 짧을수록 많이 만들어지고 길수록 적게 만들어집니다. 즉 '만들 수 있다/없다'가 어느 지점을 경계로 딱 갈립니다. 그 경계를 이분 탐색으로 찾습니다.",
+      body: "연속된 구간을 다룰 때 씁니다. 오른쪽 포인터로 창을 넓히다가 조건이 깨지면 왼쪽 포인터로 좁힙니다. 창의 길이가 고정이면 더 단순하고, 조건에 따라 길이가 변하면 '언제 좁힐지'가 핵심입니다.",
     },
     {
       kind: "list",
       items: [
-        "탐색 대상이 배열이 아니라 답의 범위 `[최솟값, 최댓값]`입니다",
-        "`check(x)`를 만들어 예/아니오를 판정합니다 — 보통 `O(n)`",
-        "전체 복잡도는 `O(n log(범위))`가 됩니다",
+        "**고정 길이** — 길이 k 창의 최대 합 같은 문제. 한 칸 밀 때마다 들어온 값을 더하고 나간 값을 뺍니다",
+        "**가변 길이** — 조건을 만족하는 가장 긴/짧은 구간. 넓히다가 조건 위반이면 만족할 때까지 좁힙니다",
       ],
     },
     {
       kind: "text",
-      body: "이 패턴을 알아보는 신호는 '최대의 최소' 또는 '최소의 최대'라는 표현입니다. 직접 최적값을 구하기 어려울 때, 후보를 하나 정해놓고 가능한지만 따지는 쪽으로 문제를 뒤집는 것입니다.",
+      body: "가변 길이 윈도우는 보통 해시와 함께 옵니다. '중복 없는 가장 긴 부분 문자열'이 대표적입니다 — 창 안의 문자를 셋으로 관리하면서, 중복이 생기면 그 문자가 빠질 때까지 왼쪽을 밉니다.",
+    },
+    {
+      kind: "heading",
+      body: "카데인 알고리즘",
+    },
+    {
+      kind: "text",
+      body: "연속 부분 수열의 최대 합은 포인터 대신 '여기서 새로 시작할까, 이어붙일까'라는 한 줄의 판단으로 풀립니다. 이전까지의 누적이 음수면 버리고 새로 시작하는 편이 항상 낫습니다. 엄밀히는 DP지만 코드가 한 줄이라 이 주에 함께 다룹니다.",
     },
   ],
   patterns: [
     {
-      title: "기본 이분 탐색",
-      note: "lo < hi 와 hi = mid 를 짝으로, mid는 내림. 루프가 끝나면 lo가 답의 위치입니다.",
+      title: "양끝 투 포인터 (정렬된 배열)",
       code: {
-        javascript: `let lo = 0;
-let hi = nums.length;
-while (lo < hi) {
-  const mid = lo + Math.floor((hi - lo) / 2);
-  if (nums[mid] < target) lo = mid + 1;
-  else hi = mid;
-}
-return nums[lo] === target ? lo : -1;`,
-        python: `lo, hi = 0, len(nums)
-while lo < hi:
-    mid = (lo + hi) // 2
-    if nums[mid] < target:
-        lo = mid + 1
+        javascript: `let i = 0;
+let j = nums.length - 1;
+while (i < j) {
+  const sum = nums[i] + nums[j];
+  if (sum === target) return [i, j];
+  if (sum < target) i++;
+  else j--;
+}`,
+        python: `i, j = 0, len(nums) - 1
+while i < j:
+    total = nums[i] + nums[j]
+    if total == target:
+        return [i, j]
+    if total < target:
+        i += 1
     else:
-        hi = mid
-return lo if lo < len(nums) and nums[lo] == target else -1`,
+        j -= 1`,
       },
     },
     {
-      title: "답을 이분 탐색하기",
-      note: "check(x)가 x에 대해 단조로워야 성립합니다.",
+      title: "가변 길이 슬라이딩 윈도우",
+      note: "오른쪽으로 넓히고, 조건이 깨진 동안 왼쪽으로 좁힙니다.",
       code: {
-        javascript: `let lo = 1;
-let hi = Math.max(...lengths);
+        javascript: `let left = 0;
 let best = 0;
-while (lo <= hi) {
-  const mid = lo + Math.floor((hi - lo) / 2);
-  if (check(mid)) {
-    best = mid;
-    lo = mid + 1;
-  } else {
-    hi = mid - 1;
+const window = new Set();
+for (let right = 0; right < s.length; right++) {
+  while (window.has(s[right])) {
+    window.delete(s[left]);
+    left++;
   }
-}
-return best;`,
-        python: `lo, hi = 1, max(lengths)
+  window.add(s[right]);
+  best = Math.max(best, right - left + 1);
+}`,
+        python: `left = 0
 best = 0
-while lo <= hi:
-    mid = (lo + hi) // 2
-    if check(mid):
-        best = mid
-        lo = mid + 1
-    else:
-        hi = mid - 1
-return best`,
+window = set()
+for right, c in enumerate(s):
+    while c in window:
+        window.remove(s[left])
+        left += 1
+    window.add(c)
+    best = max(best, right - left + 1)`,
+      },
+    },
+    {
+      title: "카데인 알고리즘",
+      code: {
+        javascript: `let cur = nums[0];
+let best = nums[0];
+for (let i = 1; i < nums.length; i++) {
+  cur = Math.max(nums[i], cur + nums[i]);
+  best = Math.max(best, cur);
+}`,
+        python: `cur = best = nums[0]
+for n in nums[1:]:
+    cur = max(n, cur + n)
+    best = max(best, cur)`,
       },
     },
   ],
   problems: [
     {
-      slug: "binary-search",
-      title: "이진 탐색",
+      title: "정렬된 배열의 두 수의 합",
       role: "워밍업",
-      teaches: "기본 형태를 정확히 쓰기",
+      teaches: "양끝 포인터의 기본형",
     },
     {
-      title: "삽입 위치 찾기",
+      title: "정렬된 배열 중복 제거",
       role: "핵심",
-      teaches: "lower bound 변형",
+      teaches: "읽기 포인터와 쓰기 포인터를 분리하기",
     },
     {
-      title: "회전된 정렬 배열에서 검색",
+      slug: "max-subarray",
+      title: "가장 큰 연속 부분 수열의 합",
       role: "핵심",
-      teaches: "정렬이 한 번 끊긴 배열에서의 이분 탐색",
+      teaches: "카데인 알고리즘",
     },
     {
-      title: "랜선 자르기",
+      slug: "longest-unique-substring",
+      title: "중복 없는 가장 긴 부분 문자열",
       role: "도전",
-      teaches: "답을 이분 탐색하는 사고 전환",
+      teaches: "가변 윈도우와 해시의 조합",
     },
   ],
   selfCheck: [
-    "`mid = (lo + hi) / 2`와 `lo + (hi - lo) / 2`는 무엇이 다른가?",
-    "`while (lo < hi)`와 `hi = mid`를 쓸 때 mid를 올림하면 무슨 일이 일어나는가?",
-    "파라메트릭 서치를 쓸 수 있는 조건은 무엇이며, 문제의 어떤 표현이 신호가 되는가?",
+    "포인터 두 개를 쓰는데도 O(n)인 이유를 설명할 수 있는가?",
+    "양끝 투 포인터가 정렬을 전제하는 이유는? 정렬하면 안 되는 문제는 어떻게 푸는가?",
+    "가변 길이 윈도우에서 '언제 왼쪽을 미는가'를 무엇으로 판단하는가?",
   ],
 };

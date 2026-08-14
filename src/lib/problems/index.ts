@@ -21,21 +21,21 @@ import { validateBst } from "./validate-bst";
  * week's warm-up is often easier than the previous week's challenge.
  */
 export const problems: Problem[] = [
-  twoSum, // 1주차 · 시간 복잡도와 배열
-  groupAnagrams, // 4주차 · 정렬
-  maxSubarray, // 5주차 · 투 포인터와 슬라이딩 윈도우
-  longestUniqueSubstring, // 5주차
-  validParentheses, // 7주차 · 스택 · 큐 · 덱
-  binarySearch, // 8주차 · 이분 탐색
-  treeMaxDepth, // 10주차 · 트리
-  treeInorder, // 10주차
-  invertTree, // 10주차
-  validateBst, // 10주차
-  numberOfIslands, // 11주차 · 그래프와 DFS · BFS
-  coinChange, // 15주차 · 그리디
-  climbingStairs, // 16주차 · DP 입문
-  minHeap, // 19주차 · 힙과 우선순위 큐
-  topKFrequent, // 19주차
+  twoSum, // 5주차 · 해시: 맵과 셋
+  groupAnagrams, // 7주차 · 정렬
+  maxSubarray, // 8주차 · 투 포인터와 슬라이딩 윈도우
+  longestUniqueSubstring, // 8주차
+  coinChange, // 9주차 · 그리디
+  validParentheses, // 10주차 · 스택 · 큐 · 덱
+  binarySearch, // 11주차 · 이분 탐색과 결정 알고리즘
+  treeMaxDepth, // 14주차 · 트리와 이진 트리
+  treeInorder, // 14주차
+  invertTree, // 14주차
+  validateBst, // 14주차
+  numberOfIslands, // 15주차 · 그래프와 DFS · BFS
+  minHeap, // 18주차 · 힙과 우선순위 큐
+  topKFrequent, // 18주차
+  climbingStairs, // 19주차 · DP 입문
 ];
 
 export function getProblem(slug: string): Problem | undefined {

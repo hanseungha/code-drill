@@ -3,185 +3,158 @@ import type { Week } from "@/lib/curriculum/types";
 export const w20: Week = {
   week: 20,
   phase: 4,
-  title: "최단 경로와 위상 정렬",
-  summary: "간선에 비용이 붙으면 BFS로는 부족합니다.",
+  title: "DP 심화 (2차원)",
+  summary: "상태에 축을 하나 더합니다. 배낭, LCS, 편집 거리.",
   concept: [
     {
       kind: "text",
-      body: "13주차에서 BFS가 최단 거리를 주는 건 모든 간선의 비용이 같을 때뿐이라고 했습니다. 비용이 다르면 '홉 수가 적은 경로'와 '비용이 싼 경로'가 달라집니다. 그때 필요한 것이 다익스트라입니다.",
-    },
-    {
-      kind: "heading",
-      body: "다익스트라",
+      body: "1차원 DP로 표현되지 않는 문제가 있습니다. '몇 번째 물건까지 봤는가'만으로는 부족하고 '가방에 남은 용량이 얼마인가'를 함께 알아야 하는 경우입니다. 이럴 때 상태에 축을 하나 더해 `dp[i][w]`로 만듭니다.",
     },
     {
       kind: "text",
-      body: "발상은 BFS와 같습니다. 다만 큐 대신 **힙**을 씁니다. '아직 확정되지 않은 정점 중 가장 가까운 것'을 꺼내 확정하고, 거기서 갈 수 있는 곳의 거리를 갱신합니다. 힙 덕분에 '가장 가까운 것'을 `O(log V)`에 찾을 수 있어 전체가 `O((V + E) log V)`입니다.",
-    },
-    {
-      kind: "text",
-      body: "정확성의 핵심은 이렇습니다. 가장 가까운 미확정 정점을 꺼냈다면, 그보다 짧은 경로는 존재할 수 없습니다. 다른 경로로 돌아가려면 이미 더 먼 정점을 거쳐야 하고, 비용이 음수가 아닌 한 그건 더 비싸기 때문입니다.",
-    },
-    {
-      kind: "trap",
-      title: "음수 간선이 있으면 다익스트라가 깨집니다",
-      body: "위 논리가 '비용이 음수가 아니다'에 기대고 있습니다. 음수 간선이 있으면 먼 길로 돌아가다 큰 음수를 만나 더 싸질 수 있어, 확정한 정점을 나중에 뒤집어야 합니다. 그때는 벨만-포드(`O(VE)`)를 씁니다. 벨만-포드는 음수 사이클 탐지도 겸합니다.",
-    },
-    {
-      kind: "trap",
-      title: "힙에서 꺼낸 값이 최신인지 확인해야 합니다",
-      body: "거리를 갱신할 때마다 힙에 새로 넣으면 같은 정점이 여러 번 들어갑니다. 꺼냈을 때 기록된 거리보다 크면 이미 처리된 낡은 항목이므로 건너뛰세요. 이 한 줄을 빠뜨리면 답은 맞아도 시간이 크게 늘어납니다.",
+      body: "축이 늘어도 절차는 그대로입니다. 상태를 정의하고, 전이를 쓰고, 초기값을 채우고, 순서를 정합니다. 다만 상태를 정의할 때 **두 축이 각각 무엇을 뜻하는지** 분명히 적어야 합니다.",
     },
     {
       kind: "heading",
-      body: "세 가지 최단 경로",
+      body: "0-1 배낭",
+    },
+    {
+      kind: "text",
+      body: "물건마다 무게와 가치가 있고 가방 용량이 정해져 있습니다. 각 물건은 넣거나 안 넣거나 둘 중 하나입니다(그래서 0-1). `dp[i][w]`를 'i번째 물건까지 고려했고 용량이 w일 때의 최대 가치'로 두면, 전이는 넣는 경우와 안 넣는 경우의 최댓값입니다.",
     },
     {
       kind: "table",
-      headers: ["알고리즘", "용도", "복잡도", "음수 간선"],
+      headers: ["종류", "각 물건 사용", "내부 루프 방향", "구분"],
       rows: [
-        ["BFS", "모든 간선 비용이 같을 때", "`O(V + E)`", "해당 없음"],
-        ["다익스트라", "한 정점에서 전체로", "`O((V+E) log V)`", "불가"],
-        ["벨만-포드", "음수 간선, 사이클 탐지", "`O(VE)`", "가능"],
-        ["플로이드-워셜", "모든 쌍 사이", "`O(V³)`", "가능"],
+        ["0-1 배낭", "최대 한 번", "용량을 **내림차순**", "같은 물건 재사용 방지"],
+        ["무한 배낭", "제한 없음", "용량을 **오름차순**", "재사용 허용"],
+      ],
+    },
+    {
+      kind: "trap",
+      title: "1차원으로 줄일 때 루프 방향을 틀리면 조용히 다른 문제가 됩니다",
+      body: "공간을 아끼려고 `dp[w]` 한 줄로 줄일 때, 0-1 배낭은 용량을 큰 쪽부터 내려와야 합니다. 오름차순으로 돌면 방금 갱신한 값을 다시 써서 같은 물건을 여러 번 넣게 됩니다 — 그건 무한 배낭입니다. 에러가 없고 답만 달라서 알아채기 어렵습니다.",
+    },
+    {
+      kind: "heading",
+      body: "두 문자열을 나란히 놓는 DP",
+    },
+    {
+      kind: "text",
+      body: "LCS(최장 공통 부분 수열)와 편집 거리는 구조가 같습니다. `dp[i][j]`를 '첫 문자열의 앞 i글자와 둘째 문자열의 앞 j글자를 봤을 때의 답'으로 두고, 두 글자가 같은지에 따라 전이가 갈립니다.",
+    },
+    {
+      kind: "list",
+      items: [
+        "**LCS** — 같으면 `dp[i-1][j-1] + 1`, 다르면 `max(dp[i-1][j], dp[i][j-1])`",
+        "**편집 거리** — 같으면 `dp[i-1][j-1]`, 다르면 삽입·삭제·교체 세 방향의 최솟값 + 1",
       ],
     },
     {
       kind: "text",
-      body: "플로이드-워셜은 3중 반복문 다섯 줄이 전부라 정점이 500개 이하면 먼저 고려할 만합니다. **가운데 경유지 루프가 가장 바깥**에 와야 한다는 점만 기억하세요. 순서를 바꾸면 틀립니다.",
+      body: "편집 거리의 세 방향이 각각 무슨 연산인지 짚어두면 외울 필요가 없습니다. `dp[i][j-1]`에서 오면 삽입, `dp[i-1][j]`에서 오면 삭제, `dp[i-1][j-1]`에서 오면 교체입니다.",
     },
     {
       kind: "heading",
-      body: "위상 정렬",
+      body: "롤링 배열",
     },
     {
       kind: "text",
-      body: "'A를 끝내야 B를 할 수 있다'는 선후 관계가 있을 때, 모두를 만족하는 순서를 찾는 것이 위상 정렬입니다. 방향 그래프에 사이클이 없어야(DAG) 가능합니다.",
-    },
-    {
-      kind: "text",
-      body: "구현은 간단합니다. 각 정점의 **진입 차수**(자기를 가리키는 간선 수)를 세고, 0인 것을 큐에 넣습니다. 하나 꺼낼 때마다 그 정점이 가리키는 곳들의 진입 차수를 1씩 줄이고, 0이 되면 큐에 넣습니다.",
-    },
-    {
-      kind: "text",
-      body: "이 과정에서 **꺼낸 정점 수가 전체보다 적으면 사이클이 있다는 뜻**입니다. 서로가 서로를 기다려 진입 차수가 영영 0이 되지 않기 때문입니다. 그래서 위상 정렬은 사이클 탐지에도 그대로 쓰입니다.",
+      body: "전이가 바로 이전 행만 쓴다면 표 전체를 들고 있을 필요가 없습니다. 두 행만 번갈아 쓰거나, 방향을 잘 잡으면 한 행으로도 됩니다. 메모리가 `O(n × m)`에서 `O(m)`으로 줄어듭니다. 다만 **경로를 복원해야 한다면 표 전체가 필요합니다**.",
     },
   ],
   patterns: [
     {
-      title: "다익스트라",
-      note: "낡은 항목 건너뛰기(첫 if)가 성능의 핵심입니다.",
+      title: "0-1 배낭 (1차원으로 압축)",
+      note: "용량 루프가 내림차순인 것이 0-1을 보장합니다.",
       code: {
-        javascript: `const dist = new Array(n).fill(Infinity);
-dist[start] = 0;
-const heap = new MinHeap((a, b) => a[0] - b[0]);
-heap.push([0, start]);
-while (heap.size > 0) {
-  const [d, v] = heap.pop();
-  if (d > dist[v]) continue;              // 낡은 항목
-  for (const [next, cost] of graph[v]) {
-    if (dist[v] + cost < dist[next]) {
-      dist[next] = dist[v] + cost;
-      heap.push([dist[next], next]);
-    }
-  }
-}`,
-        python: `import heapq
-
-dist = [float("inf")] * n
-dist[start] = 0
-heap = [(0, start)]
-while heap:
-    d, v = heapq.heappop(heap)
-    if d > dist[v]:                       # 낡은 항목
-        continue
-    for nxt, cost in graph[v]:
-        if dist[v] + cost < dist[nxt]:
-            dist[nxt] = dist[v] + cost
-            heapq.heappush(heap, (dist[nxt], nxt))`,
-      },
-    },
-    {
-      title: "플로이드-워셜",
-      note: "경유지 k가 가장 바깥 루프여야 합니다.",
-      code: {
-        javascript: `for (let k = 0; k < n; k++) {
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      if (dist[i][k] + dist[k][j] < dist[i][j]) {
-        dist[i][j] = dist[i][k] + dist[k][j];
-      }
-    }
-  }
-}`,
-        python: `for k in range(n):
-    for i in range(n):
-        for j in range(n):
-            if dist[i][k] + dist[k][j] < dist[i][j]:
-                dist[i][j] = dist[i][k] + dist[k][j]`,
-      },
-    },
-    {
-      title: "위상 정렬 (진입 차수 + 큐)",
-      code: {
-        javascript: `const indegree = new Array(n).fill(0);
-for (const [a, b] of edges) indegree[b]++;
-const queue = [];
-for (let v = 0; v < n; v++) if (indegree[v] === 0) queue.push(v);
-const order = [];
-let head = 0;
-while (head < queue.length) {
-  const v = queue[head++];
-  order.push(v);
-  for (const next of graph[v]) {
-    if (--indegree[next] === 0) queue.push(next);
+        javascript: `const dp = new Array(capacity + 1).fill(0);
+for (let i = 0; i < n; i++) {
+  for (let w = capacity; w >= weight[i]; w--) {
+    dp[w] = Math.max(dp[w], dp[w - weight[i]] + value[i]);
   }
 }
-if (order.length < n) return [];          // 사이클이 있습니다`,
-        python: `from collections import deque
-
-indegree = [0] * n
-for a, b in edges:
-    indegree[b] += 1
-queue = deque(v for v in range(n) if indegree[v] == 0)
-order = []
-while queue:
-    v = queue.popleft()
-    order.append(v)
-    for nxt in graph[v]:
-        indegree[nxt] -= 1
-        if indegree[nxt] == 0:
-            queue.append(nxt)
-if len(order) < n:
-    return []                             # 사이클이 있습니다`,
+return dp[capacity];`,
+        python: `dp = [0] * (capacity + 1)
+for i in range(n):
+    for w in range(capacity, weight[i] - 1, -1):
+        dp[w] = max(dp[w], dp[w - weight[i]] + value[i])
+return dp[capacity]`,
+      },
+    },
+    {
+      title: "최장 공통 부분 수열",
+      code: {
+        javascript: `const dp = Array.from({ length: a.length + 1 }, () =>
+  new Array(b.length + 1).fill(0),
+);
+for (let i = 1; i <= a.length; i++) {
+  for (let j = 1; j <= b.length; j++) {
+    dp[i][j] = a[i - 1] === b[j - 1]
+      ? dp[i - 1][j - 1] + 1
+      : Math.max(dp[i - 1][j], dp[i][j - 1]);
+  }
+}`,
+        python: `dp = [[0] * (len(b) + 1) for _ in range(len(a) + 1)]
+for i in range(1, len(a) + 1):
+    for j in range(1, len(b) + 1):
+        if a[i - 1] == b[j - 1]:
+            dp[i][j] = dp[i - 1][j - 1] + 1
+        else:
+            dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])`,
+      },
+    },
+    {
+      title: "편집 거리",
+      note: "초기값은 '빈 문자열로 만들려면 전부 지워야 한다'입니다.",
+      code: {
+        javascript: `for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+for (let i = 1; i <= a.length; i++) {
+  for (let j = 1; j <= b.length; j++) {
+    dp[i][j] = a[i - 1] === b[j - 1]
+      ? dp[i - 1][j - 1]
+      : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+  }
+}`,
+        python: `for i in range(len(a) + 1):
+    dp[i][0] = i
+for j in range(len(b) + 1):
+    dp[0][j] = j
+for i in range(1, len(a) + 1):
+    for j in range(1, len(b) + 1):
+        if a[i - 1] == b[j - 1]:
+            dp[i][j] = dp[i - 1][j - 1]
+        else:
+            dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])`,
       },
     },
   ],
   problems: [
     {
-      title: "다익스트라 최단 경로",
+      title: "격자 경로의 수",
       role: "워밍업",
-      teaches: "힙을 쓴 BFS 확장",
+      teaches: "2차원 DP의 가장 단순한 형태",
     },
     {
-      title: "네트워크 지연 시간",
+      title: "0-1 배낭",
       role: "핵심",
-      teaches: "모든 정점까지의 거리 중 최댓값",
+      teaches: "용량을 상태 축으로 두기",
     },
     {
-      title: "수강 과목 순서",
+      title: "최장 공통 부분 수열",
       role: "핵심",
-      teaches: "위상 정렬과 사이클 탐지",
+      teaches: "두 문자열을 나란히 놓는 DP",
     },
     {
-      title: "모든 쌍 최단 거리",
+      title: "편집 거리",
       role: "도전",
-      teaches: "플로이드-워셜의 루프 순서",
+      teaches: "세 방향 전이와 그 의미",
     },
   ],
   selfCheck: [
-    "다익스트라가 음수 간선에서 깨지는 이유를 설명할 수 있는가?",
-    "힙에서 꺼낸 항목이 낡았는지 확인하지 않으면 무엇이 나빠지는가?",
-    "위상 정렬 결과의 길이가 정점 수보다 짧다면 그건 무슨 뜻인가?",
+    "0-1 배낭을 1차원으로 줄일 때 용량 루프를 오름차순으로 돌면 어떤 문제가 되는가?",
+    "편집 거리의 세 전이가 각각 어떤 연산에 대응하는가?",
+    "롤링 배열을 쓸 수 없는 경우는 언제인가?",
   ],
 };

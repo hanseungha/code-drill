@@ -70,7 +70,7 @@ export const MIN_HEAP_JS = `class MinHeap {
 /** Prefix a starter with the shared heap, kept below the function being solved. */
 export function withMinHeap(starter: string): string {
   return `${starter}
-// ── 아래는 19주차에서 직접 만들어 본 최소 힙입니다. 그대로 쓰세요. ──
+// ── 아래는 18주차에서 직접 만들어 본 최소 힙입니다. 그대로 쓰세요. ──
 // 값을 그냥 넣으면 오름차순, 짝을 넣을 때는 비교자를 주세요.
 //   const heap = new MinHeap((a, b) => a[0] - b[0]);
 ${MIN_HEAP_JS}

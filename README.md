@@ -50,6 +50,7 @@ npm run dev      # http://localhost:3000
 npm run build
 npm run lint
 npm run verify   # 모든 모범 답안을 실제 채점기로 검증
+npm run docs     # docs/curriculum.md 의 주차 목록을 커리큘럼 데이터에서 다시 생성
 ```
 
 `npm run verify`는 브라우저에 배포되는 워커 코드를 그대로 사용합니다.
@@ -73,6 +74,10 @@ npm run verify   # 모든 모범 답안을 실제 채점기로 검증
 
 커리큘럼이 가리키는 문제 slug가 실제로 존재하는지, 모든 문제가 정확히 한 주차에
 배치됐는지는 `npm run verify` 가 함께 검사합니다.
+
+주차 구성을 바꿀 때는 `docs/curriculum.md` 의 **필수 주제 커버리지** 표를 먼저 보세요.
+코딩 테스트 필수 주제와 담당 주차의 대응표라서, 주차를 옮기다 주제가 통째로 빠지는
+일을 막아줍니다. 표 아래의 주차별 목록은 `npm run docs` 로 데이터에서 다시 생성합니다.
 
 ## 문제 추가하기
 
@@ -121,7 +126,7 @@ testCases: [
 
 ### JavaScript 힙
 
-Python은 `heapq` 가 내장이지만 JavaScript에는 내장 힙이 없습니다. 19주차 1번
+Python은 `heapq` 가 내장이지만 JavaScript에는 내장 힙이 없습니다. 18주차 1번
 문제에서 한 번 직접 만들고, 그 이후 문제부터는 `snippets.ts` 의 `MIN_HEAP_JS` 를
 `withMinHeap()` 으로 스타터에 붙여 제공합니다.
 

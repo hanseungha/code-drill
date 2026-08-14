@@ -3,142 +3,166 @@ import type { Week } from "@/lib/curriculum/types";
 export const w15: Week = {
   week: 15,
   phase: 3,
-  title: "그리디",
-  summary: "당장 최선인 선택이 전체 최선이 되는 경우 — 그리고 안 되는 경우.",
+  title: "그래프와 DFS · BFS",
+  summary: "트리의 제약을 풀면 그래프입니다. 대신 방문 표시가 필요해집니다.",
   concept: [
     {
       kind: "text",
-      body: "그리디는 매 순간 가장 좋아 보이는 것을 고르고 뒤돌아보지 않는 방식입니다. 코드가 짧고 빠릅니다. 문제는 **언제 이게 옳은가**이고, 그것을 판단하는 것이 이번 주의 전부입니다.",
+      body: "그래프는 정점과 간선으로 이루어집니다. 트리도 그래프의 일종인데, 사이클이 없고 부모가 하나뿐이라는 제약이 붙은 특수한 경우입니다. 그 제약을 풀면 **같은 곳을 다시 방문할 수 있게** 되고, 그래서 그래프 탐색에는 방문 배열이 반드시 필요합니다.",
     },
     {
       kind: "heading",
-      body: "그리디가 통하려면",
-    },
-    {
-      kind: "list",
-      items: [
-        "**탐욕 선택 속성** — 지금의 최선을 골라도 최적해를 놓치지 않는다",
-        "**최적 부분 구조** — 그 선택을 하고 남은 문제의 최적해를 더하면 전체 최적해가 된다",
-      ],
-    },
-    {
-      kind: "text",
-      body: "말은 어렵지만 실전에서 확인하는 방법은 단순합니다. **반례를 먼저 찾아보는 것**입니다. 5분 안에 반례가 안 나오면 그리디로 밀어붙이고, 반례가 나오면 DP로 갑니다. 증명하려 들면 시험 시간이 사라집니다.",
-    },
-    {
-      kind: "heading",
-      body: "자주 나오는 형태",
+      body: "그래프를 코드로 표현하기",
     },
     {
       kind: "table",
-      headers: ["문제", "무엇을 기준으로 정렬", "왜"],
+      headers: ["표현", "메모리", "간선 확인", "이웃 순회", "언제"],
       rows: [
-        ["회의실 배정", "끝나는 시각 오름차순", "빨리 끝날수록 뒤에 남는 시간이 많다"],
-        ["구명보트", "무게 오름차순 + 양끝 포인터", "가장 무거운 사람은 가장 가벼운 사람과 짝지어야 이득"],
-        ["동전 거스름돈 (배수 화폐)", "큰 단위부터", "큰 단위가 작은 단위의 배수라 손해가 없다"],
-        ["최소 회의실 개수", "시작 시각 + 힙", "가장 빨리 끝나는 방을 재사용"],
+        ["인접 리스트", "`O(V + E)`", "`O(차수)`", "빠름", "대부분의 경우"],
+        ["인접 행렬", "`O(V²)`", "`O(1)`", "`O(V)`", "정점이 적고 간선이 빽빽할 때"],
       ],
     },
     {
       kind: "text",
-      body: "회의실 배정에서 '시작이 빠른 것'이나 '짧은 것'을 고르면 왜 안 되는지 직접 반례를 그려보세요. 긴 회의 하나가 짧은 회의 둘을 막는 그림이 바로 나옵니다. 이런 식으로 **기준을 바꿔가며 반례를 찾는 연습**이 그리디의 훈련법입니다.",
+      body: "정점이 10만 개면 인접 행렬은 100억 칸이라 아예 만들 수 없습니다. 특별한 이유가 없으면 인접 리스트를 쓰세요. 격자(지도) 문제는 아예 자료구조를 만들지 않고, 좌표 자체를 정점으로 보고 상하좌우를 간선으로 취급합니다.",
     },
     {
       kind: "heading",
-      body: "그리디가 깨지는 순간",
+      body: "DFS와 BFS",
     },
     {
       kind: "text",
-      body: "이번 주의 마지막 문제가 이 지점입니다. 동전이 1, 5, 10처럼 배수 관계면 큰 것부터 집는 그리디가 맞습니다. 그런데 동전이 1, 3, 4이고 6원을 만든다면?",
+      body: "둘 다 모든 정점을 빠짐없이 훑습니다. 차이는 **다음에 어디를 볼 것인가**뿐입니다. DFS는 갈 수 있는 데까지 깊이 들어갔다가 돌아오고(스택 또는 재귀), BFS는 가까운 곳부터 층층이 퍼집니다(큐).",
     },
     {
       kind: "list",
       items: [
-        "그리디: 4 + 1 + 1 = **3개**",
-        "최적: 3 + 3 = **2개**",
+        "**DFS** — 경로를 따라가야 할 때, 연결 여부만 볼 때, 재귀로 짧게 쓰고 싶을 때",
+        "**BFS** — 최단 거리가 필요할 때. 간선 가중치가 모두 같으면 BFS가 곧 최단 경로입니다 (16주차)",
       ],
     },
     {
       kind: "trap",
-      title: "그리디로 풀리지 않는데 풀린다고 착각하기 쉽습니다",
-      body: "예제 몇 개가 통과했다고 그리디가 맞다고 볼 수 없습니다. 위 반례처럼 특정 화폐 조합에서만 어긋나는 경우가 흔합니다. '앞의 선택이 뒤의 선택지를 바꾸는가?'를 자문하세요. 바꾼다면 모든 경우를 따져야 하고, 그게 다음 주 DP입니다.",
+      title: "BFS에서 방문 표시는 큐에 넣을 때 합니다",
+      body: "큐에서 꺼낼 때 방문 표시를 하면, 같은 정점이 큐에 여러 번 들어갈 수 있습니다. 격자 문제에서 큐가 폭발해 메모리 초과나 시간 초과가 납니다. **큐에 넣는 순간** 방문했다고 표시하세요. DFS도 마찬가지로 재귀에 들어가기 직전에 표시합니다.",
     },
     {
-      kind: "text",
-      body: "즉 그리디로 안 되는 문제란 '지금의 선택이 나중에 후회를 만드는' 문제입니다. 후회를 없애려면 모든 선택지를 다 따져봐야 하는데, 그것을 중복 없이 하는 방법이 동적 계획법입니다.",
+      kind: "trap",
+      title: "연결 요소가 여럿이면 한 번의 탐색으로 부족합니다",
+      body: "섬이 여러 개인 지도처럼 그래프가 조각나 있을 수 있습니다. 한 정점에서 시작한 탐색은 그 조각만 훑습니다. 모든 정점을 훑으면서 아직 방문하지 않은 곳이 있으면 거기서 새로 탐색을 시작하고, 시작한 횟수가 곧 연결 요소의 개수입니다.",
     },
   ],
   patterns: [
     {
-      title: "정렬 후 하나씩 집기 (회의실 배정)",
-      note: "끝나는 시각 기준 정렬이 핵심. 시작 시각 기준으로 하면 틀립니다.",
+      title: "인접 리스트 만들기",
       code: {
-        javascript: `meetings.sort((a, b) => a[1] - b[1]);
-let count = 0;
-let lastEnd = -Infinity;
-for (const [start, end] of meetings) {
-  if (start >= lastEnd) {
-    count++;
-    lastEnd = end;
-  }
+        javascript: `const graph = Array.from({ length: n }, () => []);
+for (const [a, b] of edges) {
+  graph[a].push(b);
+  graph[b].push(a); // 방향 그래프면 이 줄을 뺍니다
 }`,
-        python: `meetings.sort(key=lambda m: m[1])
-count = 0
-last_end = float("-inf")
-for start, end in meetings:
-    if start >= last_end:
-        count += 1
-        last_end = end`,
+        python: `graph = [[] for _ in range(n)]
+for a, b in edges:
+    graph[a].append(b)
+    graph[b].append(a)  # 방향 그래프면 이 줄을 뺍니다`,
       },
     },
     {
-      title: "정렬 후 양끝에서 짝짓기 (구명보트)",
+      title: "DFS (재귀)",
       code: {
-        javascript: `people.sort((a, b) => a - b);
-let i = 0;
-let j = people.length - 1;
-let boats = 0;
-while (i <= j) {
-  if (people[i] + people[j] <= limit) i++;
-  j--;
-  boats++;
+        javascript: `const visited = new Array(n).fill(false);
+function dfs(v) {
+  visited[v] = true;
+  for (const next of graph[v]) {
+    if (!visited[next]) dfs(next);
+  }
 }`,
-        python: `people.sort()
-i, j, boats = 0, len(people) - 1, 0
-while i <= j:
-    if people[i] + people[j] <= limit:
-        i += 1
-    j -= 1
-    boats += 1`,
+        python: `visited = [False] * n
+
+def dfs(v):
+    visited[v] = True
+    for nxt in graph[v]:
+        if not visited[nxt]:
+            dfs(nxt)`,
+      },
+    },
+    {
+      title: "BFS (큐)",
+      note: "방문 표시를 큐에 넣을 때 하는 것이 핵심입니다.",
+      code: {
+        javascript: `const visited = new Array(n).fill(false);
+const queue = [start];
+let head = 0;
+visited[start] = true;
+while (head < queue.length) {
+  const v = queue[head++];
+  for (const next of graph[v]) {
+    if (visited[next]) continue;
+    visited[next] = true;
+    queue.push(next);
+  }
+}`,
+        python: `from collections import deque
+
+visited = [False] * n
+queue = deque([start])
+visited[start] = True
+while queue:
+    v = queue.popleft()
+    for nxt in graph[v]:
+        if visited[nxt]:
+            continue
+        visited[nxt] = True
+        queue.append(nxt)`,
+      },
+    },
+    {
+      title: "격자에서 상하좌우 훑기",
+      note: "4주차에서 만든 델타 배열과 같은 도구입니다. 격자 문제마다 나옵니다.",
+      code: {
+        javascript: `const DX = [-1, 1, 0, 0];
+const DY = [0, 0, -1, 1];
+for (let d = 0; d < 4; d++) {
+  const nx = x + DX[d];
+  const ny = y + DY[d];
+  if (nx < 0 || ny < 0 || nx >= rows || ny >= cols) continue;
+  // ...
+}`,
+        python: `DIRS = ((-1, 0), (1, 0), (0, -1), (0, 1))
+for dx, dy in DIRS:
+    nx, ny = x + dx, y + dy
+    if not (0 <= nx < rows and 0 <= ny < cols):
+        continue
+    # ...`,
       },
     },
   ],
   problems: [
     {
-      title: "거스름돈 최소 동전 (배수 화폐)",
+      title: "경로 존재 판별",
       role: "워밍업",
-      teaches: "그리디가 성립하는 조건 확인하기",
+      teaches: "DFS 기본형",
     },
     {
-      title: "회의실 배정",
+      title: "연결 요소의 개수",
       role: "핵심",
-      teaches: "끝나는 시각 기준 정렬과 그 이유",
+      teaches: "모든 정점에서 탐색을 시작해야 하는 이유",
     },
     {
-      title: "구명보트",
+      slug: "number-of-islands",
+      title: "섬의 개수",
       role: "핵심",
-      teaches: "정렬 + 투 포인터 그리디",
+      teaches: "격자를 그래프로 보기",
     },
     {
-      slug: "coin-change",
-      title: "거스름돈",
+      title: "이분 그래프 판별",
       role: "도전",
-      teaches: "그리디가 실패하는 경험 — 다음 주 DP의 동기",
+      teaches: "순회하면서 색칠하기",
     },
   ],
   selfCheck: [
-    "회의실 배정에서 '시작이 빠른 순'으로 고르면 안 되는 반례를 그릴 수 있는가?",
-    "동전 1, 3, 4로 6원을 만들 때 그리디가 왜 지는가?",
-    "그리디를 쓸지 DP를 쓸지 판단할 때 스스로에게 던지는 질문은 무엇인가?",
+    "인접 행렬이 불리해지는 조건은 무엇인가?",
+    "BFS에서 방문 표시를 꺼낼 때 하면 구체적으로 무슨 일이 벌어지는가?",
+    "DFS와 BFS 중 무엇을 고를지 어떤 기준으로 판단하는가?",
   ],
 };

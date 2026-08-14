@@ -3,161 +3,142 @@ import type { Week } from "@/lib/curriculum/types";
 export const w09: Week = {
   week: 9,
   phase: 2,
-  title: "재귀와 분할 정복",
-  summary: "문제를 자기 자신의 작은 버전으로 쪼개는 사고법.",
+  title: "그리디",
+  summary: "당장 최선인 선택이 전체 최선이 되는 경우 — 그리고 안 되는 경우.",
   concept: [
     {
       kind: "text",
-      body: "재귀는 '같은 문제의 더 작은 버전을 풀 수 있다고 가정하고, 그걸 이용해 지금 문제를 푸는' 방식입니다. 중요한 건 **작은 문제가 어떻게 풀리는지 따라 내려가지 않는 것**입니다. 그건 컴퓨터가 합니다.",
+      body: "그리디는 매 순간 가장 좋아 보이는 것을 고르고 뒤돌아보지 않는 방식입니다. 코드가 짧고 빠릅니다. 문제는 **언제 이게 옳은가**이고, 그것을 판단하는 것이 이번 주의 전부입니다.",
     },
     {
-      kind: "text",
-      body: "재귀 함수를 쓸 때 정할 것은 두 가지뿐입니다. 더 이상 쪼갤 수 없는 **기저 조건**과, 작은 답으로 큰 답을 만드는 **결합 규칙**입니다.",
+      kind: "heading",
+      body: "그리디가 통하려면",
     },
     {
       kind: "list",
-      ordered: true,
       items: [
-        "기저 조건 — 언제 쪼개기를 멈추는가 (빈 배열, 노드 없음, n이 0 또는 1)",
-        "쪼개기 — 문제를 어떻게 더 작게 만드는가",
-        "결합 — 작은 답들을 어떻게 합쳐 지금의 답으로 만드는가",
+        "**탐욕 선택 속성** — 지금의 최선을 골라도 최적해를 놓치지 않는다",
+        "**최적 부분 구조** — 그 선택을 하고 남은 문제의 최적해를 더하면 전체 최적해가 된다",
       ],
     },
     {
-      kind: "trap",
-      title: "기저 조건을 빠뜨리면 스택 오버플로",
-      body: "재귀 호출은 콜 스택에 쌓입니다. 멈추지 않으면 스택이 넘칩니다. 파이썬은 기본 재귀 깊이가 1,000이라 정상적인 풀이도 깊이가 깊으면 터집니다 — `sys.setrecursionlimit(10**6)`으로 올릴 수 있습니다. JavaScript는 대략 1만 단계 안팎에서 `RangeError`가 납니다.",
-    },
-    {
-      kind: "trap",
-      title: "같은 값을 여러 번 다시 계산하는 재귀",
-      body: "재귀 피보나치는 `fib(n-1)`과 `fib(n-2)`를 부르는데, 이 둘이 같은 하위 문제를 중복해서 계산합니다. `fib(40)`이 약 3억 번 호출됩니다. 한 번 구한 값을 저장해 두면(메모이제이션) `O(n)`이 됩니다. 이것이 16주차 DP의 출발점입니다.",
+      kind: "text",
+      body: "말은 어렵지만 실전에서 확인하는 방법은 단순합니다. **반례를 먼저 찾아보는 것**입니다. 5분 안에 반례가 안 나오면 그리디로 밀어붙이고, 반례가 나오면 DP로 갑니다. 증명하려 들면 시험 시간이 사라집니다.",
     },
     {
       kind: "heading",
-      body: "분할 정복",
-    },
-    {
-      kind: "text",
-      body: "재귀 중에서도 문제를 **절반씩** 쪼개는 형태를 분할 정복이라 합니다. 절반씩 줄어드니 깊이가 `log n`이고, 각 깊이에서 `O(n)`의 일을 하면 전체가 `O(n log n)`이 됩니다. 병합 정렬이 정확히 그 구조입니다.",
+      body: "자주 나오는 형태",
     },
     {
       kind: "table",
-      headers: ["알고리즘", "쪼개기", "결합", "복잡도"],
+      headers: ["문제", "무엇을 기준으로 정렬", "왜"],
       rows: [
-        ["병합 정렬", "반으로 나눔", "정렬된 둘을 합침 `O(n)`", "`O(n log n)`"],
-        ["퀵 정렬", "기준값 기준 분할 `O(n)`", "결합 불필요", "평균 `O(n log n)`"],
-        ["거듭제곱", "지수를 반으로", "제곱 한 번 `O(1)`", "`O(log n)`"],
+        ["회의실 배정", "끝나는 시각 오름차순", "빨리 끝날수록 뒤에 남는 시간이 많다"],
+        ["구명보트", "무게 오름차순 + 양끝 포인터", "가장 무거운 사람은 가장 가벼운 사람과 짝지어야 이득"],
+        ["동전 거스름돈 (배수 화폐)", "큰 단위부터", "큰 단위가 작은 단위의 배수라 손해가 없다"],
+        ["최소 회의실 개수", "시작 시각 + 힙", "가장 빨리 끝나는 방을 재사용"],
       ],
     },
     {
       kind: "text",
-      body: "거듭제곱이 좋은 예입니다. `a^n`을 n번 곱하면 `O(n)`이지만, `a^n = (a^(n/2))²`라는 관계를 쓰면 `O(log n)`입니다. 지수가 홀수면 `a`를 한 번 더 곱해 주면 됩니다.",
+      body: "회의실 배정에서 '시작이 빠른 것'이나 '짧은 것'을 고르면 왜 안 되는지 직접 반례를 그려보세요. 긴 회의 하나가 짧은 회의 둘을 막는 그림이 바로 나옵니다. 이런 식으로 **기준을 바꿔가며 반례를 찾는 연습**이 그리디의 훈련법입니다.",
     },
     {
       kind: "heading",
-      body: "재귀와 반복",
+      body: "그리디가 깨지는 순간",
     },
     {
       kind: "text",
-      body: "모든 재귀는 스택을 직접 관리하면 반복문으로 바꿀 수 있습니다. 7주차에서 스택을 배운 뒤에 재귀를 배우는 이유입니다. 깊이가 깊어 스택 오버플로가 걱정될 때 이 변환을 씁니다.",
+      body: "이번 주의 마지막 문제가 이 지점입니다. 동전이 1, 5, 10처럼 배수 관계면 큰 것부터 집는 그리디가 맞습니다. 그런데 동전이 1, 3, 4이고 6원을 만든다면?",
+    },
+    {
+      kind: "list",
+      items: [
+        "그리디: 4 + 1 + 1 = **3개**",
+        "최적: 3 + 3 = **2개**",
+      ],
+    },
+    {
+      kind: "trap",
+      title: "그리디로 풀리지 않는데 풀린다고 착각하기 쉽습니다",
+      body: "예제 몇 개가 통과했다고 그리디가 맞다고 볼 수 없습니다. 위 반례처럼 특정 화폐 조합에서만 어긋나는 경우가 흔합니다. '앞의 선택이 뒤의 선택지를 바꾸는가?'를 자문하세요. 바꾼다면 모든 경우를 따져야 하고, 그게 19주차 DP입니다.",
+    },
+    {
+      kind: "text",
+      body: "즉 그리디로 안 되는 문제란 '지금의 선택이 나중에 후회를 만드는' 문제입니다. 후회를 없애려면 모든 선택지를 다 따져봐야 하는데, 그것을 중복 없이 하는 방법이 동적 계획법입니다.",
     },
   ],
   patterns: [
     {
-      title: "메모이제이션으로 중복 계산 없애기",
+      title: "정렬 후 하나씩 집기 (회의실 배정)",
+      note: "끝나는 시각 기준 정렬이 핵심. 시작 시각 기준으로 하면 틀립니다.",
       code: {
-        javascript: `const memo = new Map();
-function fib(n) {
-  if (n <= 1) return n;
-  if (memo.has(n)) return memo.get(n);
-  const value = fib(n - 1) + fib(n - 2);
-  memo.set(n, value);
-  return value;
-}`,
-        python: `from functools import lru_cache
-
-@lru_cache(maxsize=None)
-def fib(n):
-    if n <= 1:
-        return n
-    return fib(n - 1) + fib(n - 2)`,
-      },
-    },
-    {
-      title: "병합 정렬",
-      code: {
-        javascript: `function mergeSort(a) {
-  if (a.length <= 1) return a;
-  const mid = a.length >> 1;
-  const left = mergeSort(a.slice(0, mid));
-  const right = mergeSort(a.slice(mid));
-  const out = [];
-  let i = 0;
-  let j = 0;
-  while (i < left.length && j < right.length) {
-    out.push(left[i] <= right[j] ? left[i++] : right[j++]);
+        javascript: `meetings.sort((a, b) => a[1] - b[1]);
+let count = 0;
+let lastEnd = -Infinity;
+for (const [start, end] of meetings) {
+  if (start >= lastEnd) {
+    count++;
+    lastEnd = end;
   }
-  return out.concat(left.slice(i), right.slice(j));
 }`,
-        python: `def merge_sort(a):
-    if len(a) <= 1:
-        return a
-    mid = len(a) // 2
-    left, right = merge_sort(a[:mid]), merge_sort(a[mid:])
-    out = []
-    i = j = 0
-    while i < len(left) and j < len(right):
-        if left[i] <= right[j]:
-            out.append(left[i])
-            i += 1
-        else:
-            out.append(right[j])
-            j += 1
-    return out + left[i:] + right[j:]`,
+        python: `meetings.sort(key=lambda m: m[1])
+count = 0
+last_end = float("-inf")
+for start, end in meetings:
+    if start >= last_end:
+        count += 1
+        last_end = end`,
       },
     },
     {
-      title: "빠른 거듭제곱",
+      title: "정렬 후 양끝에서 짝짓기 (구명보트)",
       code: {
-        javascript: `function power(a, n) {
-  if (n === 0) return 1;
-  const half = power(a, Math.floor(n / 2));
-  return n % 2 === 0 ? half * half : half * half * a;
+        javascript: `people.sort((a, b) => a - b);
+let i = 0;
+let j = people.length - 1;
+let boats = 0;
+while (i <= j) {
+  if (people[i] + people[j] <= limit) i++;
+  j--;
+  boats++;
 }`,
-        python: `def power(a, n):
-    if n == 0:
-        return 1
-    half = power(a, n // 2)
-    return half * half if n % 2 == 0 else half * half * a`,
+        python: `people.sort()
+i, j, boats = 0, len(people) - 1, 0
+while i <= j:
+    if people[i] + people[j] <= limit:
+        i += 1
+    j -= 1
+    boats += 1`,
       },
     },
   ],
   problems: [
     {
-      title: "재귀 피보나치와 메모이제이션",
+      title: "거스름돈 최소 동전 (배수 화폐)",
       role: "워밍업",
-      teaches: "중복 계산을 직접 체감하기",
+      teaches: "그리디가 성립하는 조건 확인하기",
     },
     {
-      title: "거듭제곱 빠르게",
+      title: "회의실 배정",
       role: "핵심",
-      teaches: "분할 정복으로 O(log n) 만들기",
+      teaches: "끝나는 시각 기준 정렬과 그 이유",
     },
     {
-      title: "병합 정렬 직접 구현",
+      title: "구명보트",
       role: "핵심",
-      teaches: "분할 → 정복 → 병합의 전체 구조",
+      teaches: "정렬 + 투 포인터 그리디",
     },
     {
-      title: "하노이 탑",
+      slug: "coin-change",
+      title: "거스름돈",
       role: "도전",
-      teaches: "재귀적 사고의 정석",
+      teaches: "그리디가 실패하는 경험 — 19주차 DP의 동기",
     },
   ],
   selfCheck: [
-    "재귀 함수를 쓸 때 반드시 정해야 하는 두 가지는?",
-    "재귀 피보나치가 느린 이유와, 고치는 방법은?",
-    "분할 정복이 O(n log n)이 되는 이유를 '깊이 × 각 깊이의 일'로 설명할 수 있는가?",
+    "회의실 배정에서 '시작이 빠른 순'으로 고르면 안 되는 반례를 그릴 수 있는가?",
+    "동전 1, 3, 4로 6원을 만들 때 그리디가 왜 지는가?",
+    "그리디를 쓸지 DP를 쓸지 판단할 때 스스로에게 던지는 질문은 무엇인가?",
   ],
 };

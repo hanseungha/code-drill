@@ -3,158 +3,190 @@ import type { Week } from "@/lib/curriculum/types";
 export const w17: Week = {
   week: 17,
   phase: 3,
-  title: "DP 심화 (2차원)",
-  summary: "상태에 축을 하나 더합니다. 배낭, LCS, 편집 거리.",
+  title: "백트래킹",
+  summary: "모든 경우를 만들되, 가망 없는 가지는 미리 잘라냅니다.",
   concept: [
     {
       kind: "text",
-      body: "1차원 DP로 표현되지 않는 문제가 있습니다. '몇 번째 물건까지 봤는가'만으로는 부족하고 '가방에 남은 용량이 얼마인가'를 함께 알아야 하는 경우입니다. 이럴 때 상태에 축을 하나 더해 `dp[i][w]`로 만듭니다.",
+      body: "완전 탐색은 가능한 모든 경우를 만들어 보는 방식입니다. 백트래킹은 그것을 재귀로 구현하되, **도중에 답이 될 수 없다고 판단되면 그 아래를 통째로 건너뛰는** 기법입니다. 이 '건너뛰기'가 가지치기(pruning)이고, 백트래킹의 전부라고 해도 됩니다.",
     },
     {
       kind: "text",
-      body: "축이 늘어도 절차는 그대로입니다. 상태를 정의하고, 전이를 쓰고, 초기값을 채우고, 순서를 정합니다. 다만 상태를 정의할 때 **두 축이 각각 무엇을 뜻하는지** 분명히 적어야 합니다.",
+      body: "구조는 단순합니다. 선택하고, 더 깊이 들어가고, 돌아와서 선택을 되돌립니다. 이 세 줄이 반복될 뿐입니다.",
     },
     {
-      kind: "heading",
-      body: "0-1 배낭",
-    },
-    {
-      kind: "text",
-      body: "물건마다 무게와 가치가 있고 가방 용량이 정해져 있습니다. 각 물건은 넣거나 안 넣거나 둘 중 하나입니다(그래서 0-1). `dp[i][w]`를 'i번째 물건까지 고려했고 용량이 w일 때의 최대 가치'로 두면, 전이는 넣는 경우와 안 넣는 경우의 최댓값입니다.",
-    },
-    {
-      kind: "table",
-      headers: ["종류", "각 물건 사용", "내부 루프 방향", "구분"],
-      rows: [
-        ["0-1 배낭", "최대 한 번", "용량을 **내림차순**", "같은 물건 재사용 방지"],
-        ["무한 배낭", "제한 없음", "용량을 **오름차순**", "재사용 허용"],
+      kind: "list",
+      ordered: true,
+      items: [
+        "**선택** — 현재 후보를 결과에 넣습니다",
+        "**진행** — 다음 단계로 재귀합니다",
+        "**취소** — 넣었던 것을 빼서 원래 상태로 되돌립니다",
       ],
     },
     {
       kind: "trap",
-      title: "1차원으로 줄일 때 루프 방향을 틀리면 조용히 다른 문제가 됩니다",
-      body: "공간을 아끼려고 `dp[w]` 한 줄로 줄일 때, 0-1 배낭은 용량을 큰 쪽부터 내려와야 합니다. 오름차순으로 돌면 방금 갱신한 값을 다시 써서 같은 물건을 여러 번 넣게 됩니다 — 그건 무한 배낭입니다. 에러가 없고 답만 달라서 알아채기 어렵습니다.",
+      title: "취소를 빠뜨리면 조용히 틀립니다",
+      body: "결과 배열에 넣기만 하고 빼지 않으면 다음 가지가 이전 가지의 흔적을 물려받습니다. 에러 없이 답만 틀리므로 원인을 찾기 어렵습니다. 넣는 줄과 빼는 줄을 항상 짝으로 쓰는 습관을 들이세요.",
+    },
+    {
+      kind: "trap",
+      title: "결과를 그대로 담으면 나중에 전부 같은 값이 됩니다",
+      body: "진행 중인 배열을 결과 목록에 그냥 `push`하면 참조가 담깁니다. 이후 취소 단계에서 그 배열이 계속 바뀌므로, 끝나고 보면 모든 결과가 빈 배열이 되어 있습니다. **복사본**을 담아야 합니다 — `[...path]` 또는 `path[:]`.",
     },
     {
       kind: "heading",
-      body: "두 문자열을 나란히 놓는 DP",
+      body: "세 가지 기본 형태",
     },
     {
-      kind: "text",
-      body: "LCS(최장 공통 부분 수열)와 편집 거리는 구조가 같습니다. `dp[i][j]`를 '첫 문자열의 앞 i글자와 둘째 문자열의 앞 j글자를 봤을 때의 답'으로 두고, 두 글자가 같은지에 따라 전이가 갈립니다.",
-    },
-    {
-      kind: "list",
-      items: [
-        "**LCS** — 같으면 `dp[i-1][j-1] + 1`, 다르면 `max(dp[i-1][j], dp[i][j-1])`",
-        "**편집 거리** — 같으면 `dp[i-1][j-1]`, 다르면 삽입·삭제·교체 세 방향의 최솟값 + 1",
+      kind: "table",
+      headers: ["만들 것", "개수", "다음 후보의 시작", "중복 사용"],
+      rows: [
+        ["부분집합", "2ⁿ", "`i + 1`", "안 함"],
+        ["조합 (nCk)", "nCk", "`i + 1`", "안 함"],
+        ["순열 (nPn)", "n!", "처음부터", "`used` 배열로 막음"],
       ],
     },
     {
       kind: "text",
-      body: "편집 거리의 세 방향이 각각 무슨 연산인지 짚어두면 외울 필요가 없습니다. `dp[i][j-1]`에서 오면 삽입, `dp[i-1][j]`에서 오면 삭제, `dp[i-1][j-1]`에서 오면 교체입니다.",
+      body: "차이는 '다음 재귀에 무엇을 넘기는가' 한 줄입니다. 조합은 자기 다음 인덱스부터 보게 해서 순서가 다른 같은 조합을 만들지 않고, 순열은 전부 다시 보되 이미 쓴 것만 막습니다.",
     },
     {
       kind: "heading",
-      body: "롤링 배열",
+      body: "가지치기가 실력입니다",
     },
     {
       kind: "text",
-      body: "전이가 바로 이전 행만 쓴다면 표 전체를 들고 있을 필요가 없습니다. 두 행만 번갈아 쓰거나, 방향을 잘 잡으면 한 행으로도 됩니다. 메모리가 `O(n × m)`에서 `O(m)`으로 줄어듭니다. 다만 **경로를 복원해야 한다면 표 전체가 필요합니다**.",
+      body: "N-Queen에서 가지치기 없이 모든 배치를 만들면 8×8에서 약 40억 가지입니다. 열과 대각선 충돌을 놓는 즉시 확인하면 2천 가지 정도만 탐색합니다. 같은 알고리즘인데 결과가 완전히 다릅니다.",
+    },
+    {
+      kind: "list",
+      items: [
+        "지금까지의 부분 답이 이미 조건을 어겼다면 즉시 되돌아갑니다",
+        "남은 것을 다 더해도 목표에 못 미친다면 더 볼 필요가 없습니다",
+        "정렬해두면 '이 후보가 안 되면 뒤도 안 된다'는 판단이 가능해집니다",
+      ],
     },
   ],
   patterns: [
     {
-      title: "0-1 배낭 (1차원으로 압축)",
-      note: "용량 루프가 내림차순인 것이 0-1을 보장합니다.",
+      title: "부분집합",
       code: {
-        javascript: `const dp = new Array(capacity + 1).fill(0);
-for (let i = 0; i < n; i++) {
-  for (let w = capacity; w >= weight[i]; w--) {
-    dp[w] = Math.max(dp[w], dp[w - weight[i]] + value[i]);
+        javascript: `const out = [];
+const path = [];
+function backtrack(start) {
+  out.push([...path]);          // 복사본을 담습니다
+  for (let i = start; i < nums.length; i++) {
+    path.push(nums[i]);         // 선택
+    backtrack(i + 1);           // 진행
+    path.pop();                 // 취소
   }
 }
-return dp[capacity];`,
-        python: `dp = [0] * (capacity + 1)
-for i in range(n):
-    for w in range(capacity, weight[i] - 1, -1):
-        dp[w] = max(dp[w], dp[w - weight[i]] + value[i])
-return dp[capacity]`,
+backtrack(0);`,
+        python: `out = []
+path = []
+
+def backtrack(start):
+    out.append(path[:])          # 복사본을 담습니다
+    for i in range(start, len(nums)):
+        path.append(nums[i])     # 선택
+        backtrack(i + 1)         # 진행
+        path.pop()               # 취소
+
+backtrack(0)`,
       },
     },
     {
-      title: "최장 공통 부분 수열",
+      title: "순열",
+      note: "조합과 달리 매번 처음부터 보되, used로 이미 쓴 원소를 막습니다.",
       code: {
-        javascript: `const dp = Array.from({ length: a.length + 1 }, () =>
-  new Array(b.length + 1).fill(0),
-);
-for (let i = 1; i <= a.length; i++) {
-  for (let j = 1; j <= b.length; j++) {
-    dp[i][j] = a[i - 1] === b[j - 1]
-      ? dp[i - 1][j - 1] + 1
-      : Math.max(dp[i - 1][j], dp[i][j - 1]);
+        javascript: `const used = new Array(nums.length).fill(false);
+function backtrack() {
+  if (path.length === nums.length) {
+    out.push([...path]);
+    return;
+  }
+  for (let i = 0; i < nums.length; i++) {
+    if (used[i]) continue;
+    used[i] = true;
+    path.push(nums[i]);
+    backtrack();
+    path.pop();
+    used[i] = false;
   }
 }`,
-        python: `dp = [[0] * (len(b) + 1) for _ in range(len(a) + 1)]
-for i in range(1, len(a) + 1):
-    for j in range(1, len(b) + 1):
-        if a[i - 1] == b[j - 1]:
-            dp[i][j] = dp[i - 1][j - 1] + 1
-        else:
-            dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])`,
+        python: `used = [False] * len(nums)
+
+def backtrack():
+    if len(path) == len(nums):
+        out.append(path[:])
+        return
+    for i, n in enumerate(nums):
+        if used[i]:
+            continue
+        used[i] = True
+        path.append(n)
+        backtrack()
+        path.pop()
+        used[i] = False`,
       },
     },
     {
-      title: "편집 거리",
-      note: "초기값은 '빈 문자열로 만들려면 전부 지워야 한다'입니다.",
+      title: "가지치기를 넣은 조합의 합",
+      note: "정렬해두면 후보가 남은 목표보다 클 때 뒤를 전부 버릴 수 있습니다.",
       code: {
-        javascript: `for (let i = 0; i <= a.length; i++) dp[i][0] = i;
-for (let j = 0; j <= b.length; j++) dp[0][j] = j;
-for (let i = 1; i <= a.length; i++) {
-  for (let j = 1; j <= b.length; j++) {
-    dp[i][j] = a[i - 1] === b[j - 1]
-      ? dp[i - 1][j - 1]
-      : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+        javascript: `candidates.sort((a, b) => a - b);
+function backtrack(start, remain) {
+  if (remain === 0) {
+    out.push([...path]);
+    return;
+  }
+  for (let i = start; i < candidates.length; i++) {
+    if (candidates[i] > remain) break;   // 가지치기
+    path.push(candidates[i]);
+    backtrack(i + 1, remain - candidates[i]);
+    path.pop();
   }
 }`,
-        python: `for i in range(len(a) + 1):
-    dp[i][0] = i
-for j in range(len(b) + 1):
-    dp[0][j] = j
-for i in range(1, len(a) + 1):
-    for j in range(1, len(b) + 1):
-        if a[i - 1] == b[j - 1]:
-            dp[i][j] = dp[i - 1][j - 1]
-        else:
-            dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])`,
+        python: `candidates.sort()
+
+def backtrack(start, remain):
+    if remain == 0:
+        out.append(path[:])
+        return
+    for i in range(start, len(candidates)):
+        if candidates[i] > remain:       # 가지치기
+            break
+        path.append(candidates[i])
+        backtrack(i + 1, remain - candidates[i])
+        path.pop()`,
       },
     },
   ],
   problems: [
     {
-      title: "격자 경로의 수",
+      title: "부분집합 모두 구하기",
       role: "워밍업",
-      teaches: "2차원 DP의 가장 단순한 형태",
+      teaches: "선택하고 되돌리는 구조",
     },
     {
-      title: "0-1 배낭",
+      title: "순열 생성",
       role: "핵심",
-      teaches: "용량을 상태 축으로 두기",
+      teaches: "used 배열로 중복 사용 막기",
     },
     {
-      title: "최장 공통 부분 수열",
+      title: "합이 target인 조합",
       role: "핵심",
-      teaches: "두 문자열을 나란히 놓는 DP",
+      teaches: "중복 제거와 가지치기",
     },
     {
-      title: "편집 거리",
+      title: "N-Queen",
       role: "도전",
-      teaches: "세 방향 전이와 그 의미",
+      teaches: "가지치기가 만드는 차이",
     },
   ],
   selfCheck: [
-    "0-1 배낭을 1차원으로 줄일 때 용량 루프를 오름차순으로 돌면 어떤 문제가 되는가?",
-    "편집 거리의 세 전이가 각각 어떤 연산에 대응하는가?",
-    "롤링 배열을 쓸 수 없는 경우는 언제인가?",
+    "결과 목록에 복사본이 아니라 원본을 담으면 무슨 일이 일어나는가?",
+    "조합과 순열의 코드에서 실제로 다른 부분은 어디인가?",
+    "'n ≤ 20'이라는 제한이 백트래킹을 시사하는 이유는? (1주차 표)",
   ],
 };

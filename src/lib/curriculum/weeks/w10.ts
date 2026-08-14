@@ -3,146 +3,146 @@ import type { Week } from "@/lib/curriculum/types";
 export const w10: Week = {
   week: 10,
   phase: 2,
-  title: "트리",
-  summary: "재귀가 가장 자연스럽게 맞아떨어지는 자료구조.",
+  title: "스택 · 큐 · 덱",
+  summary: "무엇을 먼저 꺼낼 것인가로 갈리는 세 자료구조.",
   concept: [
     {
       kind: "text",
-      body: "트리는 노드마다 자식을 가지는 구조입니다. 이진 트리는 자식이 최대 둘이고, 각각 `left`와 `right`로 부릅니다. 트리 문제가 재귀와 잘 맞는 이유는 명확합니다 — **어떤 노드에서 봐도 왼쪽 서브트리와 오른쪽 서브트리가 다시 트리**이기 때문입니다.",
-    },
-    {
-      kind: "text",
-      body: "그래서 트리 문제의 재귀는 거의 항상 같은 모양입니다. 빈 노드면 기본값을 돌려주고, 아니면 두 자식에게 같은 질문을 던진 뒤 그 답을 합칩니다.",
+      body: "셋 다 '순서대로 담았다가 꺼내는' 자료구조인데, 꺼내는 쪽이 다릅니다. 스택은 마지막에 넣은 것부터(LIFO), 큐는 먼저 넣은 것부터(FIFO), 덱은 양쪽 모두에서 꺼낼 수 있습니다.",
     },
     {
       kind: "heading",
-      body: "네 가지 순회",
-    },
-    {
-      kind: "table",
-      headers: ["순회", "방문 순서", "쓰임"],
-      rows: [
-        ["전위 (preorder)", "자기 → 왼쪽 → 오른쪽", "트리 복사, 구조 출력"],
-        ["중위 (inorder)", "왼쪽 → 자기 → 오른쪽", "BST를 정렬된 순서로 얻기"],
-        ["후위 (postorder)", "왼쪽 → 오른쪽 → 자기", "자식 결과가 필요한 계산, 삭제"],
-        ["레벨 (level order)", "위에서 아래로, 왼쪽에서 오른쪽", "깊이별 처리, 큐 사용"],
-      ],
+      body: "스택이 답인 신호",
     },
     {
       kind: "text",
-      body: "앞의 셋은 코드가 완전히 같고 **세 줄의 순서만** 다릅니다. 레벨 순회만 재귀가 아니라 큐를 씁니다 — 사실상 BFS이고, 11주차에서 그래프로 확장됩니다.",
-    },
-    {
-      kind: "heading",
-      body: "이진 탐색 트리",
+      body: "**가장 최근 것과 짝을 맞춰야 할 때** 스택입니다. 괄호가 대표적입니다 — 닫는 괄호는 언제나 가장 최근에 열린 괄호와 짝입니다. 수식 계산, 되돌리기(undo), 함수 호출 관계도 같은 구조입니다.",
     },
     {
       kind: "text",
-      body: "모든 노드에서 **왼쪽 서브트리의 모든 값이 자기보다 작고, 오른쪽 서브트리의 모든 값이 자기보다 큰** 트리를 이진 탐색 트리(BST)라 합니다. 이 성질 덕에 값을 찾을 때 매번 한쪽을 통째로 버릴 수 있어 평균 `O(log n)`입니다 — 8주차 이분 탐색과 같은 아이디어입니다.",
+      body: "재귀도 사실 스택입니다. 컴퓨터가 호출 스택을 대신 관리해 줄 뿐입니다. 13주차에서 이 관계를 다시 봅니다.",
     },
     {
       kind: "trap",
-      title: "BST 검사에서 부모만 보면 틀립니다",
-      body: "각 노드에서 '왼쪽 자식 < 나 < 오른쪽 자식'만 확인하면 통과하지만 실제로는 BST가 아닌 트리가 있습니다. 손자가 조상의 조건을 어길 수 있기 때문입니다. 노드마다 **들어갈 수 있는 값의 범위**를 물려주면서 내려가야 합니다. 왼쪽으로 가면 상한이 부모 값으로, 오른쪽으로 가면 하한이 부모 값으로 좁혀집니다.",
+      title: "배열을 큐로 쓰면 `shift()`와 `pop(0)`이 O(n)입니다",
+      body: "맨 앞을 빼면 나머지 원소를 전부 한 칸씩 당겨야 합니다. 큐에 10만 개를 넣고 빼면 `O(n²)`가 되어 시간 초과입니다. 파이썬은 `collections.deque`를 쓰고, JavaScript는 배열에 인덱스 포인터(`head`)를 두고 앞에서 꺼낸 척만 하세요. 15주차 BFS부터 이 실수가 바로 성능에 드러납니다.",
+    },
+    {
+      kind: "table",
+      headers: ["연산", "JavaScript", "Python"],
+      rows: [
+        ["스택 넣기 / 빼기", "`arr.push(x)` / `arr.pop()`", "`a.append(x)` / `a.pop()`"],
+        ["스택 맨 위 보기", "`arr[arr.length - 1]`", "`a[-1]`"],
+        ["큐 넣기", "`arr.push(x)`", "`dq.append(x)`"],
+        ["큐 빼기 (권장)", "`arr[head++]`", "`dq.popleft()`"],
+        ["큐 빼기 (느림)", "`arr.shift()` ✗", "`a.pop(0)` ✗"],
+        ["덱 앞에 넣기", "인덱스 관리 필요", "`dq.appendleft(x)`"],
+      ],
     },
     {
       kind: "heading",
-      body: "이 사이트에서 트리를 주고받는 방식",
+      body: "단조 스택",
     },
     {
       kind: "text",
-      body: "테스트 케이스는 JSON이어야 해서(같은 케이스가 JavaScript와 Python 채점기를 함께 돌아야 합니다) 트리는 **레벨 순서 배열**로 적습니다. `null`은 자식이 없다는 뜻이고, 뒤쪽 `null`은 생략합니다. 채점기가 호출 직전에 이 배열을 노드로 바꿔서 넘겨주므로, 여러분은 `root.left`와 `root.right`만 쓰면 됩니다.",
+      body: "'각 원소의 오른쪽에서 처음으로 자기보다 큰 값'을 모든 원소에 대해 구하는 문제가 있습니다. 순진하게 짜면 `O(n²)`인데, 스택 안의 값을 항상 증가(또는 감소) 순서로 유지하면 `O(n)`이 됩니다.",
     },
     {
       kind: "text",
-      body: "`[3, 9, 20, null, null, 15, 7]`은 루트 3에 자식 9와 20이 있고, 9는 자식이 없으며, 20의 자식이 15와 7인 트리입니다. 새 노드가 필요하면 `TreeNode`를 두 언어 모두에서 바로 쓸 수 있습니다.",
+      body: "핵심 발상은 이렇습니다. 새 값이 들어올 때 스택 위쪽에 그보다 작은 값들이 있다면, 그 값들의 답이 지금 확정됩니다. 각 원소는 스택에 한 번 들어가고 한 번 나오므로 전체가 `O(n)`입니다.",
     },
   ],
   patterns: [
     {
-      title: "트리 재귀의 기본형",
-      note: "빈 노드에서 기본값을 돌려주고, 두 자식의 답을 합칩니다.",
+      title: "괄호 짝 맞추기",
       code: {
-        javascript: `function depth(node) {
-  if (node === null) return 0;
-  return 1 + Math.max(depth(node.left), depth(node.right));
-}`,
-        python: `def depth(node):
-    if node is None:
-        return 0
-    return 1 + max(depth(node.left), depth(node.right))`,
+        javascript: `const pair = { ")": "(", "]": "[", "}": "{" };
+const stack = [];
+for (const c of s) {
+  if (c in pair) {
+    if (stack.pop() !== pair[c]) return false;
+  } else {
+    stack.push(c);
+  }
+}
+return stack.length === 0;`,
+        python: `pair = {")": "(", "]": "[", "}": "{"}
+stack = []
+for c in s:
+    if c in pair:
+        if not stack or stack.pop() != pair[c]:
+            return False
+    else:
+        stack.append(c)
+return not stack`,
       },
     },
     {
-      title: "중위 순회",
-      note: "세 줄의 순서만 바꾸면 전위·후위가 됩니다.",
+      title: "인덱스 포인터로 만든 큐",
+      note: "JavaScript에서 shift()를 피하는 방법. 메모리를 조금 더 쓰는 대신 O(1)입니다.",
       code: {
-        javascript: `const out = [];
-function walk(node) {
-  if (node === null) return;
-  walk(node.left);
-  out.push(node.val);
-  walk(node.right);
+        javascript: `const queue = [start];
+let head = 0;
+while (head < queue.length) {
+  const node = queue[head++];
+  // ...
+  queue.push(next);
 }`,
-        python: `out = []
+        python: `from collections import deque
 
-def walk(node):
-    if node is None:
-        return
-    walk(node.left)
-    out.append(node.val)
-    walk(node.right)`,
+queue = deque([start])
+while queue:
+    node = queue.popleft()
+    # ...
+    queue.append(next_node)`,
       },
     },
     {
-      title: "범위를 물려주며 BST 검사",
+      title: "단조 스택으로 다음 큰 원소 찾기",
       code: {
-        javascript: `function check(node, low, high) {
-  if (node === null) return true;
-  if (low !== null && node.val <= low) return false;
-  if (high !== null && node.val >= high) return false;
-  return check(node.left, low, node.val) && check(node.right, node.val, high);
+        javascript: `const answer = new Array(nums.length).fill(-1);
+const stack = []; // 인덱스를 담습니다
+for (let i = 0; i < nums.length; i++) {
+  while (stack.length > 0 && nums[stack[stack.length - 1]] < nums[i]) {
+    answer[stack.pop()] = nums[i];
+  }
+  stack.push(i);
 }`,
-        python: `def check(node, low, high):
-    if node is None:
-        return True
-    if low is not None and node.val <= low:
-        return False
-    if high is not None and node.val >= high:
-        return False
-    return check(node.left, low, node.val) and check(node.right, node.val, high)`,
+        python: `answer = [-1] * len(nums)
+stack = []  # 인덱스를 담습니다
+for i, n in enumerate(nums):
+    while stack and nums[stack[-1]] < n:
+        answer[stack.pop()] = n
+    stack.append(i)`,
       },
     },
   ],
   problems: [
     {
-      slug: "tree-max-depth",
-      title: "트리의 최대 깊이",
+      slug: "valid-parentheses",
+      title: "올바른 괄호",
       role: "워밍업",
-      teaches: "트리 재귀의 기본형",
+      teaches: "스택의 교과서적 사용",
     },
     {
-      slug: "tree-inorder",
-      title: "중위 순회",
+      title: "최근 K개의 이동 평균",
       role: "핵심",
-      teaches: "순회 순서가 만드는 차이",
+      teaches: "큐와 덱으로 창을 관리하기",
     },
     {
-      slug: "invert-tree",
-      title: "트리 뒤집기",
+      title: "후위 표기식 계산",
       role: "핵심",
-      teaches: "트리를 읽는 것이 아니라 만들어 반환하기",
+      teaches: "스택으로 수식 처리하기",
     },
     {
-      slug: "validate-bst",
-      title: "이진 탐색 트리 유효성 검사",
+      title: "다음 큰 원소",
       role: "도전",
-      teaches: "범위를 물려주는 재귀",
+      teaches: "단조 스택으로 O(n²)를 O(n)으로",
     },
   ],
   selfCheck: [
-    "중위 순회로 BST를 훑으면 왜 정렬된 순서가 나오는가?",
-    "BST 검사에서 부모만 보면 안 되는 반례를 하나 만들 수 있는가?",
-    "레벨 순회만 다른 셋과 구현이 다른 이유는?",
+    "배열의 `shift()`가 O(n)인 이유와, 큐가 필요할 때의 대안은?",
+    "스택을 써야 한다는 걸 알아채는 신호는 무엇인가?",
+    "단조 스택이 O(n)인 이유를 '각 원소가 몇 번 들어가고 나오는가'로 설명할 수 있는가?",
   ],
 };

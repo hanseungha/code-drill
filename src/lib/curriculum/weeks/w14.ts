@@ -3,190 +3,146 @@ import type { Week } from "@/lib/curriculum/types";
 export const w14: Week = {
   week: 14,
   phase: 3,
-  title: "백트래킹",
-  summary: "모든 경우를 만들되, 가망 없는 가지는 미리 잘라냅니다.",
+  title: "트리와 이진 트리",
+  summary: "재귀가 가장 자연스럽게 맞아떨어지는 자료구조.",
   concept: [
     {
       kind: "text",
-      body: "완전 탐색은 가능한 모든 경우를 만들어 보는 방식입니다. 백트래킹은 그것을 재귀로 구현하되, **도중에 답이 될 수 없다고 판단되면 그 아래를 통째로 건너뛰는** 기법입니다. 이 '건너뛰기'가 가지치기(pruning)이고, 백트래킹의 전부라고 해도 됩니다.",
+      body: "트리는 노드마다 자식을 가지는 구조입니다. 이진 트리는 자식이 최대 둘이고, 각각 `left`와 `right`로 부릅니다. 트리 문제가 재귀와 잘 맞는 이유는 명확합니다 — **어떤 노드에서 봐도 왼쪽 서브트리와 오른쪽 서브트리가 다시 트리**이기 때문입니다.",
     },
     {
       kind: "text",
-      body: "구조는 단순합니다. 선택하고, 더 깊이 들어가고, 돌아와서 선택을 되돌립니다. 이 세 줄이 반복될 뿐입니다.",
-    },
-    {
-      kind: "list",
-      ordered: true,
-      items: [
-        "**선택** — 현재 후보를 결과에 넣습니다",
-        "**진행** — 다음 단계로 재귀합니다",
-        "**취소** — 넣었던 것을 빼서 원래 상태로 되돌립니다",
-      ],
-    },
-    {
-      kind: "trap",
-      title: "취소를 빠뜨리면 조용히 틀립니다",
-      body: "결과 배열에 넣기만 하고 빼지 않으면 다음 가지가 이전 가지의 흔적을 물려받습니다. 에러 없이 답만 틀리므로 원인을 찾기 어렵습니다. 넣는 줄과 빼는 줄을 항상 짝으로 쓰는 습관을 들이세요.",
-    },
-    {
-      kind: "trap",
-      title: "결과를 그대로 담으면 나중에 전부 같은 값이 됩니다",
-      body: "진행 중인 배열을 결과 목록에 그냥 `push`하면 참조가 담깁니다. 이후 취소 단계에서 그 배열이 계속 바뀌므로, 끝나고 보면 모든 결과가 빈 배열이 되어 있습니다. **복사본**을 담아야 합니다 — `[...path]` 또는 `path[:]`.",
+      body: "그래서 트리 문제의 재귀는 거의 항상 같은 모양입니다. 빈 노드면 기본값을 돌려주고, 아니면 두 자식에게 같은 질문을 던진 뒤 그 답을 합칩니다.",
     },
     {
       kind: "heading",
-      body: "세 가지 기본 형태",
+      body: "네 가지 순회",
     },
     {
       kind: "table",
-      headers: ["만들 것", "개수", "다음 후보의 시작", "중복 사용"],
+      headers: ["순회", "방문 순서", "쓰임"],
       rows: [
-        ["부분집합", "2ⁿ", "`i + 1`", "안 함"],
-        ["조합 (nCk)", "nCk", "`i + 1`", "안 함"],
-        ["순열 (nPn)", "n!", "처음부터", "`used` 배열로 막음"],
+        ["전위 (preorder)", "자기 → 왼쪽 → 오른쪽", "트리 복사, 구조 출력"],
+        ["중위 (inorder)", "왼쪽 → 자기 → 오른쪽", "BST를 정렬된 순서로 얻기"],
+        ["후위 (postorder)", "왼쪽 → 오른쪽 → 자기", "자식 결과가 필요한 계산, 삭제"],
+        ["레벨 (level order)", "위에서 아래로, 왼쪽에서 오른쪽", "깊이별 처리, 큐 사용"],
       ],
     },
     {
       kind: "text",
-      body: "차이는 '다음 재귀에 무엇을 넘기는가' 한 줄입니다. 조합은 자기 다음 인덱스부터 보게 해서 순서가 다른 같은 조합을 만들지 않고, 순열은 전부 다시 보되 이미 쓴 것만 막습니다.",
+      body: "앞의 셋은 코드가 완전히 같고 **세 줄의 순서만** 다릅니다. 레벨 순회만 재귀가 아니라 큐를 씁니다 — 사실상 BFS이고, 15주차에서 그래프로 확장됩니다.",
     },
     {
       kind: "heading",
-      body: "가지치기가 실력입니다",
+      body: "이진 탐색 트리",
     },
     {
       kind: "text",
-      body: "N-Queen에서 가지치기 없이 모든 배치를 만들면 8×8에서 약 40억 가지입니다. 열과 대각선 충돌을 놓는 즉시 확인하면 2천 가지 정도만 탐색합니다. 같은 알고리즘인데 결과가 완전히 다릅니다.",
+      body: "모든 노드에서 **왼쪽 서브트리의 모든 값이 자기보다 작고, 오른쪽 서브트리의 모든 값이 자기보다 큰** 트리를 이진 탐색 트리(BST)라 합니다. 이 성질 덕에 값을 찾을 때 매번 한쪽을 통째로 버릴 수 있어 평균 `O(log n)`입니다 — 11주차 이분 탐색과 같은 아이디어입니다.",
     },
     {
-      kind: "list",
-      items: [
-        "지금까지의 부분 답이 이미 조건을 어겼다면 즉시 되돌아갑니다",
-        "남은 것을 다 더해도 목표에 못 미친다면 더 볼 필요가 없습니다",
-        "정렬해두면 '이 후보가 안 되면 뒤도 안 된다'는 판단이 가능해집니다",
-      ],
+      kind: "trap",
+      title: "BST 검사에서 부모만 보면 틀립니다",
+      body: "각 노드에서 '왼쪽 자식 < 나 < 오른쪽 자식'만 확인하면 통과하지만 실제로는 BST가 아닌 트리가 있습니다. 손자가 조상의 조건을 어길 수 있기 때문입니다. 노드마다 **들어갈 수 있는 값의 범위**를 물려주면서 내려가야 합니다. 왼쪽으로 가면 상한이 부모 값으로, 오른쪽으로 가면 하한이 부모 값으로 좁혀집니다.",
+    },
+    {
+      kind: "heading",
+      body: "이 사이트에서 트리를 주고받는 방식",
+    },
+    {
+      kind: "text",
+      body: "테스트 케이스는 JSON이어야 해서(같은 케이스가 JavaScript와 Python 채점기를 함께 돌아야 합니다) 트리는 **레벨 순서 배열**로 적습니다. `null`은 자식이 없다는 뜻이고, 뒤쪽 `null`은 생략합니다. 채점기가 호출 직전에 이 배열을 노드로 바꿔서 넘겨주므로, 여러분은 `root.left`와 `root.right`만 쓰면 됩니다.",
+    },
+    {
+      kind: "text",
+      body: "`[3, 9, 20, null, null, 15, 7]`은 루트 3에 자식 9와 20이 있고, 9는 자식이 없으며, 20의 자식이 15와 7인 트리입니다. 새 노드가 필요하면 `TreeNode`를 두 언어 모두에서 바로 쓸 수 있습니다.",
     },
   ],
   patterns: [
     {
-      title: "부분집합",
+      title: "트리 재귀의 기본형",
+      note: "빈 노드에서 기본값을 돌려주고, 두 자식의 답을 합칩니다.",
+      code: {
+        javascript: `function depth(node) {
+  if (node === null) return 0;
+  return 1 + Math.max(depth(node.left), depth(node.right));
+}`,
+        python: `def depth(node):
+    if node is None:
+        return 0
+    return 1 + max(depth(node.left), depth(node.right))`,
+      },
+    },
+    {
+      title: "중위 순회",
+      note: "세 줄의 순서만 바꾸면 전위·후위가 됩니다.",
       code: {
         javascript: `const out = [];
-const path = [];
-function backtrack(start) {
-  out.push([...path]);          // 복사본을 담습니다
-  for (let i = start; i < nums.length; i++) {
-    path.push(nums[i]);         // 선택
-    backtrack(i + 1);           // 진행
-    path.pop();                 // 취소
-  }
-}
-backtrack(0);`,
+function walk(node) {
+  if (node === null) return;
+  walk(node.left);
+  out.push(node.val);
+  walk(node.right);
+}`,
         python: `out = []
-path = []
 
-def backtrack(start):
-    out.append(path[:])          # 복사본을 담습니다
-    for i in range(start, len(nums)):
-        path.append(nums[i])     # 선택
-        backtrack(i + 1)         # 진행
-        path.pop()               # 취소
-
-backtrack(0)`,
+def walk(node):
+    if node is None:
+        return
+    walk(node.left)
+    out.append(node.val)
+    walk(node.right)`,
       },
     },
     {
-      title: "순열",
-      note: "조합과 달리 매번 처음부터 보되, used로 이미 쓴 원소를 막습니다.",
+      title: "범위를 물려주며 BST 검사",
       code: {
-        javascript: `const used = new Array(nums.length).fill(false);
-function backtrack() {
-  if (path.length === nums.length) {
-    out.push([...path]);
-    return;
-  }
-  for (let i = 0; i < nums.length; i++) {
-    if (used[i]) continue;
-    used[i] = true;
-    path.push(nums[i]);
-    backtrack();
-    path.pop();
-    used[i] = false;
-  }
+        javascript: `function check(node, low, high) {
+  if (node === null) return true;
+  if (low !== null && node.val <= low) return false;
+  if (high !== null && node.val >= high) return false;
+  return check(node.left, low, node.val) && check(node.right, node.val, high);
 }`,
-        python: `used = [False] * len(nums)
-
-def backtrack():
-    if len(path) == len(nums):
-        out.append(path[:])
-        return
-    for i, n in enumerate(nums):
-        if used[i]:
-            continue
-        used[i] = True
-        path.append(n)
-        backtrack()
-        path.pop()
-        used[i] = False`,
-      },
-    },
-    {
-      title: "가지치기를 넣은 조합의 합",
-      note: "정렬해두면 후보가 남은 목표보다 클 때 뒤를 전부 버릴 수 있습니다.",
-      code: {
-        javascript: `candidates.sort((a, b) => a - b);
-function backtrack(start, remain) {
-  if (remain === 0) {
-    out.push([...path]);
-    return;
-  }
-  for (let i = start; i < candidates.length; i++) {
-    if (candidates[i] > remain) break;   // 가지치기
-    path.push(candidates[i]);
-    backtrack(i + 1, remain - candidates[i]);
-    path.pop();
-  }
-}`,
-        python: `candidates.sort()
-
-def backtrack(start, remain):
-    if remain == 0:
-        out.append(path[:])
-        return
-    for i in range(start, len(candidates)):
-        if candidates[i] > remain:       # 가지치기
-            break
-        path.append(candidates[i])
-        backtrack(i + 1, remain - candidates[i])
-        path.pop()`,
+        python: `def check(node, low, high):
+    if node is None:
+        return True
+    if low is not None and node.val <= low:
+        return False
+    if high is not None and node.val >= high:
+        return False
+    return check(node.left, low, node.val) and check(node.right, node.val, high)`,
       },
     },
   ],
   problems: [
     {
-      title: "부분집합 모두 구하기",
+      slug: "tree-max-depth",
+      title: "트리의 최대 깊이",
       role: "워밍업",
-      teaches: "선택하고 되돌리는 구조",
+      teaches: "트리 재귀의 기본형",
     },
     {
-      title: "순열 생성",
+      slug: "tree-inorder",
+      title: "중위 순회",
       role: "핵심",
-      teaches: "used 배열로 중복 사용 막기",
+      teaches: "순회 순서가 만드는 차이",
     },
     {
-      title: "합이 target인 조합",
+      slug: "invert-tree",
+      title: "트리 뒤집기",
       role: "핵심",
-      teaches: "중복 제거와 가지치기",
+      teaches: "트리를 읽는 것이 아니라 만들어 반환하기",
     },
     {
-      title: "N-Queen",
+      slug: "validate-bst",
+      title: "이진 탐색 트리 유효성 검사",
       role: "도전",
-      teaches: "가지치기가 만드는 차이",
+      teaches: "범위를 물려주는 재귀",
     },
   ],
   selfCheck: [
-    "결과 목록에 복사본이 아니라 원본을 담으면 무슨 일이 일어나는가?",
-    "조합과 순열의 코드에서 실제로 다른 부분은 어디인가?",
-    "'n ≤ 20'이라는 제한이 백트래킹을 시사하는 이유는? (1주차 표)",
+    "중위 순회로 BST를 훑으면 왜 정렬된 순서가 나오는가?",
+    "BST 검사에서 부모만 보면 안 되는 반례를 하나 만들 수 있는가?",
+    "레벨 순회만 다른 셋과 구현이 다른 이유는?",
   ],
 };

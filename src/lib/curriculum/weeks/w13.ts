@@ -3,163 +3,161 @@ import type { Week } from "@/lib/curriculum/types";
 export const w13: Week = {
   week: 13,
   phase: 3,
-  title: "BFS 최단 거리와 격자 탐색",
-  summary: "BFS가 왜 최단 거리인지 이해하고, 상태를 늘려 더 어려운 문제로.",
+  title: "재귀와 분할 정복",
+  summary: "문제를 자기 자신의 작은 버전으로 쪼개는 사고법.",
   concept: [
     {
       kind: "text",
-      body: "BFS는 시작점에서 가까운 순서대로 방문합니다. 거리 1인 곳을 전부 본 다음 거리 2를 보고, 그다음 거리 3을 봅니다. 그래서 **어떤 정점에 처음 도착한 순간이 곧 최단 거리**입니다. 나중에 다른 경로로 다시 도달해도 그 경로는 반드시 더 길거나 같습니다.",
-    },
-    {
-      kind: "trap",
-      title: "이 성질은 모든 간선의 가중치가 같을 때만 성립합니다",
-      body: "간선마다 비용이 다르면 '가까운 순서'가 '적은 홉 수'와 달라져 BFS는 최단을 보장하지 못합니다. 그때는 20주차의 다익스트라가 필요합니다. 격자 문제는 한 칸 이동 비용이 모두 1이라 BFS가 통합니다.",
-    },
-    {
-      kind: "heading",
-      body: "다중 시작점 BFS",
+      body: "재귀는 '같은 문제의 더 작은 버전을 풀 수 있다고 가정하고, 그걸 이용해 지금 문제를 푸는' 방식입니다. 중요한 건 **작은 문제가 어떻게 풀리는지 따라 내려가지 않는 것**입니다. 그건 컴퓨터가 합니다.",
     },
     {
       kind: "text",
-      body: "'모든 익은 토마토에서 동시에 퍼진다'거나 '가장 가까운 병원까지의 거리'처럼 출발점이 여러 개인 문제가 있습니다. 시작점마다 BFS를 돌리면 `O(시작점 수 × V)`인데, **처음부터 모든 시작점을 큐에 함께 넣으면** 한 번의 BFS로 끝납니다.",
-    },
-    {
-      kind: "text",
-      body: "이게 성립하는 이유도 같습니다. 큐에 여러 시작점이 거리 0으로 들어 있으면, BFS는 여전히 거리 순서대로 퍼지고 각 칸은 가장 가까운 시작점으로부터의 거리를 갖게 됩니다.",
-    },
-    {
-      kind: "heading",
-      body: "상태를 늘린 BFS",
-    },
-    {
-      kind: "text",
-      body: "이번 주에서 가장 중요한 개념입니다. '벽을 한 번 부술 수 있다'는 조건이 붙으면, 같은 칸이라도 **벽을 이미 부쉈는지 아닌지에 따라 상황이 다릅니다**. 그러니 방문 배열도 위치만이 아니라 `(위치, 남은 기회)`로 관리해야 합니다.",
+      body: "재귀 함수를 쓸 때 정할 것은 두 가지뿐입니다. 더 이상 쪼갤 수 없는 **기저 조건**과, 작은 답으로 큰 답을 만드는 **결합 규칙**입니다.",
     },
     {
       kind: "list",
+      ordered: true,
       items: [
-        "방문 배열의 차원이 곧 '상태'입니다 — `visited[x][y][k]`",
-        "상태가 늘면 정점 수가 곱해집니다. 기회가 1번이면 정점이 2배가 될 뿐이라 여전히 빠릅니다",
-        "열쇠 여러 개를 모으는 문제라면 비트마스크로 상태를 표현합니다 (23주차)",
+        "기저 조건 — 언제 쪼개기를 멈추는가 (빈 배열, 노드 없음, n이 0 또는 1)",
+        "쪼개기 — 문제를 어떻게 더 작게 만드는가",
+        "결합 — 작은 답들을 어떻게 합쳐 지금의 답으로 만드는가",
+      ],
+    },
+    {
+      kind: "trap",
+      title: "기저 조건을 빠뜨리면 스택 오버플로",
+      body: "재귀 호출은 콜 스택에 쌓입니다. 멈추지 않으면 스택이 넘칩니다. 파이썬은 기본 재귀 깊이가 1,000이라 정상적인 풀이도 깊이가 깊으면 터집니다 — `sys.setrecursionlimit(10**6)`으로 올릴 수 있습니다. JavaScript는 대략 1만 단계 안팎에서 `RangeError`가 납니다.",
+    },
+    {
+      kind: "trap",
+      title: "같은 값을 여러 번 다시 계산하는 재귀",
+      body: "재귀 피보나치는 `fib(n-1)`과 `fib(n-2)`를 부르는데, 이 둘이 같은 하위 문제를 중복해서 계산합니다. `fib(40)`이 약 3억 번 호출됩니다. 한 번 구한 값을 저장해 두면(메모이제이션) `O(n)`이 됩니다. 이것이 19주차 DP의 출발점입니다.",
+    },
+    {
+      kind: "heading",
+      body: "분할 정복",
+    },
+    {
+      kind: "text",
+      body: "재귀 중에서도 문제를 **절반씩** 쪼개는 형태를 분할 정복이라 합니다. 절반씩 줄어드니 깊이가 `log n`이고, 각 깊이에서 `O(n)`의 일을 하면 전체가 `O(n log n)`이 됩니다. 병합 정렬이 정확히 그 구조입니다.",
+    },
+    {
+      kind: "table",
+      headers: ["알고리즘", "쪼개기", "결합", "복잡도"],
+      rows: [
+        ["병합 정렬", "반으로 나눔", "정렬된 둘을 합침 `O(n)`", "`O(n log n)`"],
+        ["퀵 정렬", "기준값 기준 분할 `O(n)`", "결합 불필요", "평균 `O(n log n)`"],
+        ["거듭제곱", "지수를 반으로", "제곱 한 번 `O(1)`", "`O(log n)`"],
       ],
     },
     {
       kind: "text",
-      body: "이 아이디어를 알아채는 신호는 '~을 한 번 할 수 있다', '~을 k번까지 쓸 수 있다' 같은 조건입니다. 위치만으로 방문을 관리하면 최단 경로를 놓칩니다.",
+      body: "거듭제곱이 좋은 예입니다. `a^n`을 n번 곱하면 `O(n)`이지만, `a^n = (a^(n/2))²`라는 관계를 쓰면 `O(log n)`입니다. 지수가 홀수면 `a`를 한 번 더 곱해 주면 됩니다.",
     },
     {
       kind: "heading",
-      body: "추상 그래프",
+      body: "재귀와 반복",
     },
     {
       kind: "text",
-      body: "격자만 그래프인 것은 아닙니다. '한 글자만 바꿔 다른 단어로 갈 수 있다'면 단어가 정점이고 그 변환이 간선입니다. 문제에 지도가 없어도 '상태와 상태 사이의 이동'이 보이면 BFS를 꺼낼 수 있습니다.",
+      body: "모든 재귀는 스택을 직접 관리하면 반복문으로 바꿀 수 있습니다. 10주차에서 스택을 배운 뒤에 재귀를 배우는 이유입니다. 깊이가 깊어 스택 오버플로가 걱정될 때 이 변환을 씁니다.",
     },
   ],
   patterns: [
     {
-      title: "격자 BFS 최단 거리",
+      title: "메모이제이션으로 중복 계산 없애기",
       code: {
-        javascript: `const dist = Array.from({ length: rows }, () => new Array(cols).fill(-1));
-const queue = [[sx, sy]];
-let head = 0;
-dist[sx][sy] = 0;
-while (head < queue.length) {
-  const [x, y] = queue[head++];
-  for (let d = 0; d < 4; d++) {
-    const nx = x + DX[d];
-    const ny = y + DY[d];
-    if (nx < 0 || ny < 0 || nx >= rows || ny >= cols) continue;
-    if (grid[nx][ny] === 1 || dist[nx][ny] !== -1) continue;
-    dist[nx][ny] = dist[x][y] + 1;
-    queue.push([nx, ny]);
-  }
+        javascript: `const memo = new Map();
+function fib(n) {
+  if (n <= 1) return n;
+  if (memo.has(n)) return memo.get(n);
+  const value = fib(n - 1) + fib(n - 2);
+  memo.set(n, value);
+  return value;
 }`,
-        python: `from collections import deque
+        python: `from functools import lru_cache
 
-dist = [[-1] * cols for _ in range(rows)]
-queue = deque([(sx, sy)])
-dist[sx][sy] = 0
-while queue:
-    x, y = queue.popleft()
-    for dx, dy in DIRS:
-        nx, ny = x + dx, y + dy
-        if not (0 <= nx < rows and 0 <= ny < cols):
-            continue
-        if grid[nx][ny] == 1 or dist[nx][ny] != -1:
-            continue
-        dist[nx][ny] = dist[x][y] + 1
-        queue.append((nx, ny))`,
+@lru_cache(maxsize=None)
+def fib(n):
+    if n <= 1:
+        return n
+    return fib(n - 1) + fib(n - 2)`,
       },
     },
     {
-      title: "다중 시작점 BFS",
-      note: "모든 시작점을 거리 0으로 큐에 미리 넣어두는 것이 전부입니다.",
+      title: "병합 정렬",
       code: {
-        javascript: `const queue = [];
-for (let i = 0; i < rows; i++) {
-  for (let j = 0; j < cols; j++) {
-    if (grid[i][j] === 1) {
-      dist[i][j] = 0;
-      queue.push([i, j]);
-    }
+        javascript: `function mergeSort(a) {
+  if (a.length <= 1) return a;
+  const mid = a.length >> 1;
+  const left = mergeSort(a.slice(0, mid));
+  const right = mergeSort(a.slice(mid));
+  const out = [];
+  let i = 0;
+  let j = 0;
+  while (i < left.length && j < right.length) {
+    out.push(left[i] <= right[j] ? left[i++] : right[j++]);
   }
+  return out.concat(left.slice(i), right.slice(j));
 }`,
-        python: `queue = deque()
-for i in range(rows):
-    for j in range(cols):
-        if grid[i][j] == 1:
-            dist[i][j] = 0
-            queue.append((i, j))`,
+        python: `def merge_sort(a):
+    if len(a) <= 1:
+        return a
+    mid = len(a) // 2
+    left, right = merge_sort(a[:mid]), merge_sort(a[mid:])
+    out = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            out.append(left[i])
+            i += 1
+        else:
+            out.append(right[j])
+            j += 1
+    return out + left[i:] + right[j:]`,
       },
     },
     {
-      title: "상태를 추가한 BFS",
-      note: "visited의 마지막 차원이 '남은 기회'입니다.",
+      title: "빠른 거듭제곱",
       code: {
-        javascript: `// visited[x][y][k] — k는 남은 부수기 횟수
-const visited = Array.from({ length: rows }, () =>
-  Array.from({ length: cols }, () => new Array(K + 1).fill(false)),
-);
-// 벽이면 기회를 하나 쓰고 진행
-if (grid[nx][ny] === 1 && k > 0 && !visited[nx][ny][k - 1]) {
-  visited[nx][ny][k - 1] = true;
-  queue.push([nx, ny, k - 1, step + 1]);
+        javascript: `function power(a, n) {
+  if (n === 0) return 1;
+  const half = power(a, Math.floor(n / 2));
+  return n % 2 === 0 ? half * half : half * half * a;
 }`,
-        python: `# visited[x][y][k] — k는 남은 부수기 횟수
-visited = [[[False] * (K + 1) for _ in range(cols)] for _ in range(rows)]
-# 벽이면 기회를 하나 쓰고 진행
-if grid[nx][ny] == 1 and k > 0 and not visited[nx][ny][k - 1]:
-    visited[nx][ny][k - 1] = True
-    queue.append((nx, ny, k - 1, step + 1))`,
+        python: `def power(a, n):
+    if n == 0:
+        return 1
+    half = power(a, n // 2)
+    return half * half if n % 2 == 0 else half * half * a`,
       },
     },
   ],
   problems: [
     {
-      title: "미로 최단 거리",
+      title: "재귀 피보나치와 메모이제이션",
       role: "워밍업",
-      teaches: "격자 BFS 템플릿",
+      teaches: "중복 계산을 직접 체감하기",
     },
     {
-      title: "토마토 익히기",
+      title: "거듭제곱 빠르게",
       role: "핵심",
-      teaches: "다중 시작점 BFS",
+      teaches: "분할 정복으로 O(log n) 만들기",
     },
     {
-      title: "단어 변환",
+      title: "병합 정렬 직접 구현",
       role: "핵심",
-      teaches: "지도가 없는 추상 그래프에서의 BFS",
+      teaches: "분할 → 정복 → 병합의 전체 구조",
     },
     {
-      title: "벽 부수고 이동하기",
+      title: "하노이 탑",
       role: "도전",
-      teaches: "방문 배열에 상태 차원 추가하기",
+      teaches: "재귀적 사고의 정석",
     },
   ],
   selfCheck: [
-    "BFS가 최단 거리를 보장하는 이유와, 그 보장이 깨지는 조건은?",
-    "시작점이 100개일 때 BFS를 100번 돌리지 않아도 되는 이유는?",
-    "'벽을 한 번 부술 수 있다'는 조건에서 방문 배열이 어떻게 달라져야 하는가?",
+    "재귀 함수를 쓸 때 반드시 정해야 하는 두 가지는?",
+    "재귀 피보나치가 느린 이유와, 고치는 방법은?",
+    "분할 정복이 O(n log n)이 되는 이유를 '깊이 × 각 깊이의 일'로 설명할 수 있는가?",
   ],
 };

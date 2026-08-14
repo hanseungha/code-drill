@@ -2,7 +2,7 @@ import { Badge } from "@astryxdesign/core/Badge";
 import { Divider } from "@astryxdesign/core/Divider";
 import { HStack, VStack } from "@astryxdesign/core/Layout";
 import { Link } from "@astryxdesign/core/Link";
-import { List, ListItem } from "@astryxdesign/core/List";
+import { Markdown } from "@astryxdesign/core/Markdown";
 import { Heading, Text } from "@astryxdesign/core/Text";
 import { Token } from "@astryxdesign/core/Token";
 import type { Metadata } from "next";
@@ -122,11 +122,14 @@ export default async function WeekPage({ params }: PageProps<"/week/[n]">) {
             다음 주로 넘어가기 전에 소리 내어 답해 보세요. 막히면 그 부분이 아직
             안 익은 개념입니다.
           </Text>
-          <List listStyle="decimal" density="compact">
-            {week.selfCheck.map((question, i) => (
-              <ListItem key={i} label={question} />
-            ))}
-          </List>
+          {/*
+            Markdown rather than List/ListItem, for the same reason ConceptNote
+            uses it: a ListItem's label is a plain string, so a question like
+            "`[[0] * m] * n` 이 왜 위험한가?" would show its backticks.
+          */}
+          <Markdown density="compact">
+            {week.selfCheck.map((q, i) => `${i + 1}. ${q}`).join("\n")}
+          </Markdown>
         </VStack>
 
         <Divider />
