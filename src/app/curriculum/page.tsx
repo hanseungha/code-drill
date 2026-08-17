@@ -16,7 +16,7 @@ import {
 export const metadata: Metadata = {
   title: "24주 커리큘럼",
   description:
-    "개념을 먼저 익히고 그 주의 문제로 굳히는 6개월 코딩테스트 학습 과정입니다.",
+    "개념을 먼저 익히고 그 주의 문제로 굳히는 6개월 코딩테스트 학습 과정이에요.",
 };
 
 // Only what the map needs crosses to the client — the lesson bodies stay on
@@ -46,9 +46,9 @@ export default function CurriculumPage() {
           </HStack>
           <Heading level={1}>6개월 코딩테스트 커리큘럼</Heading>
           <Text color="secondary" textWrap="pretty">
-            매주 개념을 먼저 익히고, 그 개념으로 풀리는 문제 4개로 굳힙니다.
+            매주 개념을 먼저 익히고, 그 개념으로 풀리는 문제 4개로 굳혀요.
             난이도는 1주차부터 24주차까지 올라가고, 6주마다 복습과 모의고사가
-            들어갑니다.
+            들어가요.
           </Text>
         </VStack>
 

@@ -5,24 +5,24 @@ export const wordToNumber: Problem = {
   title: "영단어를 숫자로 바꾸기",
   difficulty: "medium",
   tags: ["문자열", "구현"],
-  summary: "숫자와 영단어가 섞인 문자열을 정수로 되돌립니다.",
+  summary: "숫자와 영단어가 섞인 문자열을 정수로 되돌려요.",
   description: [
-    "숫자와 영단어가 섞인 문자열 `s`가 주어집니다. 영단어를 해당하는 숫자로 바꾼 뒤, 전체를 정수로 반환하세요.",
-    "쓰이는 영단어는 `zero` `one` `two` `three` `four` `five` `six` `seven` `eight` `nine` 열 개입니다.",
-    "예를 들어 `\"one4seveneight\"` 는 `1`, `4`, `7`, `8` 이 이어진 `1478` 입니다.",
-    "영단어 열 개를 차례로 치환하고 마지막에 정수로 바꾸는 것이 가장 짧습니다. 앞에서부터 한 글자씩 읽으며 버퍼에 모아 처리해도 됩니다.",
+    "숫자와 영단어가 섞인 문자열 `s`가 주어져요. 영단어를 해당하는 숫자로 바꾼 뒤, 전체를 정수로 반환해요.",
+    "쓰이는 영단어는 `zero` `one` `two` `three` `four` `five` `six` `seven` `eight` `nine` 열 개예요.",
+    "예를 들어 `\"one4seveneight\"` 는 `1`, `4`, `7`, `8` 이 이어진 `1478` 이에요.",
+    "영단어 열 개를 차례로 치환하고 마지막에 정수로 바꾸는 것이 가장 짧아요. 앞에서부터 한 글자씩 읽으며 버퍼에 모아 처리해도 돼요.",
   ],
   examples: [
     { input: 's = "one4seveneight"', output: "1478" },
     { input: 's = "23four5six7"', output: "234567" },
     { input: 's = "2three45sixseven"', output: "234567" },
-    { input: 's = "123"', output: "123", explain: "영단어가 없으면 그대로입니다." },
+    { input: 's = "123"', output: "123", explain: "영단어가 없으면 그대로예요." },
   ],
   constraints: [
     "1 ≤ s.length ≤ 50",
-    "s 는 숫자와 위 열 개의 영단어로만 이루어집니다.",
-    "s 의 첫 글자는 `0` 이나 `zero` 로 시작하지 않습니다.",
-    "변환한 결과는 1 이상 2,000,000,000 이하입니다.",
+    "s 는 숫자와 위 열 개의 영단어로만 이루어져요.",
+    "s 의 첫 글자는 `0` 이나 `zero` 로 시작하지 않아요.",
+    "변환한 결과는 1 이상 2,000,000,000 이하예요.",
   ],
   entry: { javascript: "wordToNumber", python: "word_to_number" },
   starter: {
@@ -50,7 +50,7 @@ function wordToNumber(s) {
     { input: ["5three7"], expected: 537, hidden: true },
     { input: ["twoone"], expected: 21, hidden: true },
   ],
-  hint: "영단어 배열을 인덱스 순서(`zero` 가 0)로 두고 `replaceAll` / `replace` 를 열 번 돌리면 됩니다. 마지막에 문자열을 정수로 바꾸는 것을 잊지 마세요 — `\"1478\"` 과 `1478` 은 다른 값입니다.",
+  hint: "영단어 배열을 인덱스 순서(`zero` 가 0)로 두고 `replaceAll` / `replace` 를 열 번 돌리면 돼요. 마지막에 문자열을 정수로 바꾸는 것을 잊지 마세요 — `\"1478\"` 과 `1478` 은 다른 값이에요.",
   solution: {
     javascript: `function wordToNumber(s) {
   const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];

@@ -5,22 +5,22 @@ export const mostFrequentChar: Problem = {
   title: "가장 많이 등장한 문자",
   difficulty: "medium",
   tags: ["해시", "문자열"],
-  summary: "빈도수 맵을 만든 뒤 가장 큰 값을 가진 키를 뽑습니다.",
+  summary: "빈도수 맵을 만든 뒤 가장 큰 값을 가진 키를 뽑아요.",
   description: [
-    "영소문자로 이루어진 문자열 `s`가 주어집니다. 가장 많이 등장한 문자를 반환하세요.",
-    "가장 많이 등장한 문자가 여럿이면 **사전순으로 앞선 문자**를 반환합니다.",
-    "빈도수 세기는 해시의 절반입니다. 먼저 `{ 문자: 개수 }` 를 만들고, 그 다음 만들어진 맵에서 최댓값을 뽑는 **두 단계로 나누는 것**이 요령입니다. 한 번에 하려 들면 동점 처리에서 꼬입니다.",
+    "영소문자로 이루어진 문자열 `s`가 주어져요. 가장 많이 등장한 문자를 반환해요.",
+    "가장 많이 등장한 문자가 여럿이면 **사전순으로 앞선 문자**를 반환해요.",
+    "빈도수 세기는 해시의 절반이에요. 먼저 `{ 문자: 개수 }` 를 만들고, 그 다음 만들어진 맵에서 최댓값을 뽑는 **두 단계로 나누는 게** 요령이에요. 한 번에 하려 들면 동점 처리에서 꼬여요.",
   ],
   examples: [
     { input: 's = "aabbbcc"', output: '"b"' },
     {
       input: 's = "abab"',
       output: '"a"',
-      explain: "a와 b 모두 두 번이므로 사전순으로 앞선 a 입니다.",
+      explain: "a와 b 모두 두 번이니까 사전순으로 앞선 a 예요.",
     },
     { input: 's = "z"', output: '"z"' },
   ],
-  constraints: ["1 ≤ s.length ≤ 100,000", "s 는 영소문자로만 이루어집니다."],
+  constraints: ["1 ≤ s.length ≤ 100,000", "s 는 영소문자로만 이루어져요."],
   entry: { javascript: "mostFrequentChar", python: "most_frequent_char" },
   starter: {
     javascript: `/**
@@ -47,7 +47,7 @@ function mostFrequentChar(s) {
     { input: ["mississippi"], expected: "i", hidden: true },
     { input: ["ba"], expected: "a", hidden: true },
   ],
-  hint: "맵을 순회하며 최댓값을 찾을 때 **순회 순서에 기대지 마세요**. 개수가 더 클 때만 갱신하고, 같을 때는 문자를 비교해 더 앞선 쪽을 남기면 순서와 무관하게 답이 정해집니다. 영소문자뿐이므로 길이 26 배열로도 됩니다 — 그러면 순서가 곧 사전순입니다.",
+  hint: "맵을 순회하며 최댓값을 찾을 때 **순회 순서에 기대지 마세요**. 개수가 더 클 때만 갱신하고, 같을 때는 문자를 비교해 더 앞선 쪽을 남기면 순서와 무관하게 답이 정해져요. 영소문자뿐이니까 길이 26 배열로도 돼요 — 그러면 순서가 곧 사전순이에요.",
   solution: {
     javascript: `function mostFrequentChar(s) {
   const count = new Map();

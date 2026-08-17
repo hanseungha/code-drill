@@ -8,7 +8,7 @@ export const w10: Week = {
   concept: [
     {
       kind: "text",
-      body: "셋 다 '순서대로 담았다가 꺼내는' 자료구조인데, 꺼내는 쪽이 다릅니다. 스택은 마지막에 넣은 것부터(LIFO), 큐는 먼저 넣은 것부터(FIFO), 덱은 양쪽 모두에서 꺼낼 수 있습니다.",
+      body: "셋 다 '순서대로 담았다가 꺼내는' 자료구조인데, 꺼내는 쪽이 달라요. 스택은 마지막에 넣은 것부터(LIFO), 큐는 먼저 넣은 것부터(FIFO), 덱은 양쪽 모두에서 꺼낼 수 있어요.",
     },
     {
       kind: "heading",
@@ -16,16 +16,16 @@ export const w10: Week = {
     },
     {
       kind: "text",
-      body: "**가장 최근 것과 짝을 맞춰야 할 때** 스택입니다. 괄호가 대표적입니다 — 닫는 괄호는 언제나 가장 최근에 열린 괄호와 짝입니다. 수식 계산, 되돌리기(undo), 함수 호출 관계도 같은 구조입니다.",
+      body: "**가장 최근 것과 짝을 맞춰야 할 때** 스택이에요. 괄호가 대표적이에요 — 닫는 괄호는 언제나 가장 최근에 열린 괄호와 짝이에요. 수식 계산, 되돌리기(undo), 함수 호출 관계도 같은 구조예요.",
     },
     {
       kind: "text",
-      body: "재귀도 사실 스택입니다. 컴퓨터가 호출 스택을 대신 관리해 줄 뿐입니다. 13주차에서 이 관계를 다시 봅니다.",
+      body: "재귀도 사실 스택이에요. 컴퓨터가 호출 스택을 대신 관리해 줄 뿐이에요. 13주차에서 이 관계를 다시 봐요.",
     },
     {
       kind: "trap",
-      title: "배열을 큐로 쓰면 `shift()`와 `pop(0)`이 O(n)입니다",
-      body: "맨 앞을 빼면 나머지 원소를 전부 한 칸씩 당겨야 합니다. 큐에 10만 개를 넣고 빼면 `O(n²)`가 되어 시간 초과입니다. 파이썬은 `collections.deque`를 쓰고, JavaScript는 배열에 인덱스 포인터(`head`)를 두고 앞에서 꺼낸 척만 하세요. 15주차 BFS부터 이 실수가 바로 성능에 드러납니다.",
+      title: "배열을 큐로 쓰면 `shift()`와 `pop(0)`이 O(n)이에요",
+      body: "맨 앞을 빼면 나머지 원소를 전부 한 칸씩 당겨야 해요. 큐에 10만 개를 넣고 빼면 `O(n²)`가 되어 시간 초과가 나요. 파이썬은 `collections.deque`를 쓰고, JavaScript는 배열에 인덱스 포인터(`head`)를 두고 앞에서 꺼낸 척만 하면 돼요. 15주차 BFS부터 이 실수가 바로 성능에 드러나요.",
     },
     {
       kind: "table",
@@ -45,11 +45,11 @@ export const w10: Week = {
     },
     {
       kind: "text",
-      body: "'각 원소의 오른쪽에서 처음으로 자기보다 큰 값'을 모든 원소에 대해 구하는 문제가 있습니다. 순진하게 짜면 `O(n²)`인데, 스택 안의 값을 항상 증가(또는 감소) 순서로 유지하면 `O(n)`이 됩니다.",
+      body: "'각 원소의 오른쪽에서 처음으로 자기보다 큰 값'을 모든 원소에 대해 구하는 문제가 있어요. 순진하게 짜면 `O(n²)`인데, 스택 안의 값을 항상 증가(또는 감소) 순서로 유지하면 `O(n)`이 돼요.",
     },
     {
       kind: "text",
-      body: "핵심 발상은 이렇습니다. 새 값이 들어올 때 스택 위쪽에 그보다 작은 값들이 있다면, 그 값들의 답이 지금 확정됩니다. 각 원소는 스택에 한 번 들어가고 한 번 나오므로 전체가 `O(n)`입니다.",
+      body: "핵심 발상은 이래요. 새 값이 들어올 때 스택 위쪽에 그보다 작은 값들이 있다면, 그 값들의 답이 지금 확정돼요. 각 원소는 스택에 한 번 들어가고 한 번 나오니 전체가 `O(n)`이에요.",
     },
   ],
   patterns: [
@@ -79,7 +79,7 @@ return not stack`,
     },
     {
       title: "인덱스 포인터로 만든 큐",
-      note: "JavaScript에서 shift()를 피하는 방법. 메모리를 조금 더 쓰는 대신 O(1)입니다.",
+      note: "JavaScript에서 shift()를 피하는 방법. 메모리를 조금 더 쓰는 대신 O(1)이에요.",
       code: {
         javascript: `const queue = [start];
 let head = 0;
@@ -101,7 +101,7 @@ while queue:
       title: "단조 스택으로 다음 큰 원소 찾기",
       code: {
         javascript: `const answer = new Array(nums.length).fill(-1);
-const stack = []; // 인덱스를 담습니다
+const stack = []; // 인덱스를 담아요
 for (let i = 0; i < nums.length; i++) {
   while (stack.length > 0 && nums[stack[stack.length - 1]] < nums[i]) {
     answer[stack.pop()] = nums[i];
@@ -109,7 +109,7 @@ for (let i = 0; i < nums.length; i++) {
   stack.push(i);
 }`,
         python: `answer = [-1] * len(nums)
-stack = []  # 인덱스를 담습니다
+stack = []  # 인덱스를 담아요
 for i, n in enumerate(nums):
     while stack and nums[stack[-1]] < n:
         answer[stack.pop()] = n
@@ -125,16 +125,19 @@ for i, n in enumerate(nums):
       teaches: "스택의 교과서적 사용",
     },
     {
+      slug: "moving-average",
       title: "최근 K개의 이동 평균",
       role: "핵심",
       teaches: "큐와 덱으로 창을 관리하기",
     },
     {
+      slug: "eval-postfix",
       title: "후위 표기식 계산",
       role: "핵심",
       teaches: "스택으로 수식 처리하기",
     },
     {
+      slug: "next-greater-element",
       title: "다음 큰 원소",
       role: "도전",
       teaches: "단조 스택으로 O(n²)를 O(n)으로",

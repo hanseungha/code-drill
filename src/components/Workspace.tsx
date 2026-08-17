@@ -154,7 +154,7 @@ export function Workspace({ problem, prev, next }: WorkspaceProps) {
   }, [run]);
 
   const resetCode = useCallback(() => {
-    if (!window.confirm("작성한 코드를 지우고 기본 코드로 되돌립니다.")) return;
+    if (!window.confirm("작성한 코드를 지우고 기본 코드로 되돌려요.")) return;
     clearCode(problem.slug, language);
     setCode(problem.starter[language]);
     setOutcome(null);

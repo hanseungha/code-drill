@@ -5,16 +5,16 @@ export const numberOfIslands: Problem = {
   title: "섬의 개수",
   difficulty: "medium",
   tags: ["그래프", "BFS/DFS"],
-  summary: "2차원 격자에서 상하좌우로 이어진 땅 덩어리의 수를 셉니다.",
+  summary: "2차원 격자에서 상하좌우로 이어진 땅 덩어리의 수를 세요.",
   description: [
-    "`1`(땅)과 `0`(물)로 이루어진 2차원 배열 `grid`가 주어집니다. 섬의 개수를 반환하세요.",
-    "섬은 상하좌우로 인접한 땅끼리 이어진 덩어리입니다. 대각선으로는 이어지지 않습니다. 격자의 바깥은 모두 물로 둘러싸여 있다고 가정합니다.",
+    "`1`(땅)과 `0`(물)로 이루어진 2차원 배열 `grid`가 주어져요. 섬의 개수를 반환해요.",
+    "섬은 상하좌우로 인접한 땅끼리 이어진 덩어리예요. 대각선으로는 이어지지 않아요. 격자의 바깥은 모두 물로 둘러싸여 있다고 생각해요.",
   ],
   examples: [
     {
       input: "grid = [[1,1,0,0,0],[1,1,0,0,0],[0,0,1,0,0],[0,0,0,1,1]]",
       output: "3",
-      explain: "좌상단 덩어리, 가운데 한 칸, 우하단 두 칸으로 총 3개입니다.",
+      explain: "좌상단 덩어리, 가운데 한 칸, 우하단 두 칸으로 총 3개예요.",
     },
     {
       input: "grid = [[1,1,1,1,0],[1,1,0,1,0],[1,1,0,0,0],[0,0,0,0,0]]",
@@ -23,7 +23,7 @@ export const numberOfIslands: Problem = {
   ],
   constraints: [
     "1 ≤ grid.length, grid[i].length ≤ 300",
-    "grid[i][j]는 0 또는 1입니다.",
+    "grid[i][j]는 0 또는 1이에요.",
   ],
   entry: { javascript: "numIslands", python: "num_islands" },
   starter: {
@@ -88,7 +88,7 @@ function numIslands(grid) {
       hidden: true,
     },
   ],
-  hint: "격자를 훑다가 아직 방문하지 않은 1을 만나면 섬 개수를 1 늘리고, 거기서 BFS나 DFS로 이어진 땅을 전부 방문 처리하세요.",
+  hint: "격자를 훑다가 아직 방문하지 않은 1을 만나면 섬 개수를 1 늘리고, 거기서 BFS나 DFS로 이어진 땅을 전부 방문 처리해요.",
   solution: {
     javascript: `function numIslands(grid) {
   const rows = grid.length;

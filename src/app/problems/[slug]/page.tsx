@@ -14,7 +14,7 @@ export async function generateMetadata({
 }: PageProps<"/problems/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const problem = getProblem(slug);
-  if (!problem) return { title: "문제를 찾을 수 없습니다" };
+  if (!problem) return { title: "문제를 찾을 수 없어요" };
   return {
     title: problem.title,
     description: problem.summary,

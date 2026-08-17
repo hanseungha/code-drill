@@ -133,7 +133,7 @@ function toResult(
       passed: false,
       actual: undefined,
       returnedNothing: false,
-      error: "반환값을 읽을 수 없습니다. 순환 참조가 있는지 확인하세요.",
+      error: "반환값을 읽을 수 없어요. 순환 참조가 있는지 확인해 보세요.",
     };
   }
 
@@ -179,7 +179,7 @@ export function runTests(options: RunOptions): Promise<RunOutcome> {
             : {
                 status: "fatal",
                 message:
-                  "Python 런타임을 불러오는 데 너무 오래 걸립니다. 네트워크 상태를 확인하고 다시 시도하세요.",
+                  "Python 런타임을 불러오는 데 너무 오래 걸려요. 네트워크 상태를 확인하고 다시 시도해 보세요.",
               },
           true,
         );
@@ -226,7 +226,7 @@ export function runTests(options: RunOptions): Promise<RunOutcome> {
       finish(
         {
           status: "fatal",
-          message: event.message || "실행기를 시작하지 못했습니다.",
+          message: event.message || "실행기를 시작하지 못했어요.",
         },
         true,
       );

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s · code-drill",
   },
   description:
-    "JavaScript와 Python 코드를 브라우저에서 바로 실행하고 채점하는 코딩테스트 연습 사이트. 설치도 로그인도 필요 없습니다.",
+    "JavaScript와 Python 코드를 브라우저에서 바로 실행하고 채점하는 코딩테스트 연습 사이트. 설치도 로그인도 필요 없어요.",
   openGraph: {
     title: "code-drill",
     description:

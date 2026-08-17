@@ -5,21 +5,21 @@ export const climbingStairs: Problem = {
   title: "계단 오르기",
   difficulty: "easy",
   tags: ["DP"],
-  summary: "한 번에 1칸 또는 2칸씩 올라 n번째 계단에 도달하는 경우의 수를 셉니다.",
+  summary: "한 번에 1칸 또는 2칸씩 올라 n번째 계단에 도달하는 경우의 수를 세요.",
   description: [
-    "`n`개의 계단을 오릅니다. 한 번에 1칸 또는 2칸을 오를 수 있을 때, 꼭대기에 도달하는 서로 다른 방법의 수를 반환하세요.",
-    "결과가 커질 수 있으니 반복문으로 계산하세요. 단순 재귀는 시간 초과가 납니다.",
+    "`n`개의 계단을 올라요. 한 번에 1칸 또는 2칸을 오를 수 있을 때, 꼭대기에 도달하는 서로 다른 방법의 수를 반환해요.",
+    "결과가 커질 수 있으니 반복문으로 계산해요. 단순 재귀는 시간 초과가 나요.",
   ],
   examples: [
     {
       input: "n = 2",
       output: "2",
-      explain: "1+1, 2 두 가지입니다.",
+      explain: "1+1, 2 두 가지예요.",
     },
     {
       input: "n = 3",
       output: "3",
-      explain: "1+1+1, 1+2, 2+1 세 가지입니다.",
+      explain: "1+1+1, 1+2, 2+1 세 가지예요.",
     },
   ],
   constraints: ["1 ≤ n ≤ 45"],
@@ -47,7 +47,7 @@ function climbStairs(n) {
     { input: [30], expected: 1346269, hidden: true },
     { input: [45], expected: 1836311903, hidden: true },
   ],
-  hint: "n번째 계단에 도달하는 방법은 (n-1)번째에서 1칸 오르거나 (n-2)번째에서 2칸 오르는 경우뿐입니다. 즉 f(n) = f(n-1) + f(n-2) 인 피보나치입니다.",
+  hint: "n번째 계단에 도달하는 방법은 (n-1)번째에서 1칸 오르거나 (n-2)번째에서 2칸 오르는 경우뿐이에요. 즉 f(n) = f(n-1) + f(n-2) 인 피보나치예요.",
   solution: {
     javascript: `function climbStairs(n) {
   let a = 1;

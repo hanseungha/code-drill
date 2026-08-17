@@ -5,22 +5,22 @@ export const coinChange: Problem = {
   title: "거스름돈",
   difficulty: "medium",
   tags: ["DP"],
-  summary: "주어진 동전으로 금액을 만드는 데 필요한 최소 개수를 구합니다.",
+  summary: "주어진 동전으로 금액을 만드는 데 필요한 최소 개수를 구해요.",
   description: [
-    "동전 종류가 담긴 배열 `coins`와 목표 금액 `amount`가 주어집니다. 목표 금액을 만드는 데 필요한 동전의 최소 개수를 반환하세요.",
-    "같은 동전을 여러 번 사용할 수 있습니다. 어떤 조합으로도 금액을 만들 수 없다면 `-1`을 반환하세요.",
-    "탐욕적으로 큰 동전부터 쓰는 방법은 틀립니다. 예를 들어 `coins = [1, 3, 4]`, `amount = 6`이면 4+1+1(3개)이 아니라 3+3(2개)이 정답입니다.",
+    "동전 종류가 담긴 배열 `coins`와 목표 금액 `amount`가 주어져요. 목표 금액을 만드는 데 필요한 동전의 최소 개수를 반환해요.",
+    "같은 동전을 여러 번 사용할 수 있어요. 어떤 조합으로도 금액을 만들 수 없다면 `-1`을 반환해요.",
+    "탐욕적으로 큰 동전부터 쓰는 방법은 틀려요. 예를 들어 `coins = [1, 3, 4]`, `amount = 6`이면 4+1+1(3개)이 아니라 3+3(2개)이 정답이에요.",
   ],
   examples: [
     {
       input: "coins = [1, 2, 5], amount = 11",
       output: "3",
-      explain: "11 = 5 + 5 + 1 이므로 3개입니다.",
+      explain: "11 = 5 + 5 + 1 이므로 3개예요.",
     },
     {
       input: "coins = [2], amount = 3",
       output: "-1",
-      explain: "2원짜리로는 3원을 만들 수 없습니다.",
+      explain: "2원짜리로는 3원을 만들 수 없어요.",
     },
     { input: "coins = [1], amount = 0", output: "0" },
   ],
@@ -54,7 +54,7 @@ function coinChange(coins, amount) {
     { input: [[186, 419, 83, 408], 6249], expected: 20, hidden: true },
     { input: [[7], 3], expected: -1, hidden: true },
   ],
-  hint: "dp[i] = i원을 만드는 최소 동전 개수로 두세요. dp[0] = 0이고, 각 금액 i마다 모든 동전 c에 대해 dp[i] = min(dp[i], dp[i - c] + 1) 입니다.",
+  hint: "dp[i] = i원을 만드는 최소 동전 개수로 둬요. dp[0] = 0이고, 각 금액 i마다 모든 동전 c에 대해 dp[i] = min(dp[i], dp[i - c] + 1) 이에요.",
   solution: {
     javascript: `function coinChange(coins, amount) {
   const INF = Infinity;

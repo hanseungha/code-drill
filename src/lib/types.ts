@@ -47,7 +47,7 @@ export type Shape = "tree";
  *        15  7
  */
 export const TREE_ENCODING_NOTE =
-  "트리는 레벨 순서 배열로 주어집니다. `null`은 자식이 없다는 뜻이고, 채점기가 이 배열을 노드로 바꿔서 `root`로 넘겨줍니다. 노드는 `val`, `left`, `right`를 가지며, 새 노드가 필요하면 `TreeNode`로 만들 수 있습니다.";
+  "트리는 레벨 순서 배열로 주어져요. `null`은 자식이 없다는 뜻이고, 채점기가 이 배열을 노드로 바꿔서 `root`로 넘겨줘요. 노드는 `val`, `left`, `right`를 가지며, 새 노드가 필요하면 `TreeNode`로 만들 수 있어요.";
 
 export interface TestCase {
   /** Arguments spread into the solution function, in order. */

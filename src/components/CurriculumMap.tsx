@@ -58,8 +58,8 @@ export function CurriculumMap({
             isLabelHidden
           />
           <Text size="sm" color="secondary">
-            커리큘럼 전체 계획은 {totalPlanned}문제이고, 그중 {written}문제가
-            준비돼 있습니다.
+            커리큘럼 전체 계획은 {totalPlanned}문제이고, 그중 {written}문제를
+            지금 풀 수 있어요.
           </Text>
         </VStack>
       </Card>

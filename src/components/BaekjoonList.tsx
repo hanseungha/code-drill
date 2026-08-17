@@ -52,8 +52,8 @@ export function BaekjoonList({ problems }: { problems: BaekjoonProblem[] }) {
     >
       <VStack gap={3}>
         <Text size="sm" color="secondary" textWrap="pretty">
-          이 주차 주제로 골라둔 문제입니다. 채점은 백준에서 하고, 풀고 나면
-          여기에 체크해 두세요. 난이도 순입니다.
+          이번 주 주제로 골라둔 문제예요. 채점은 백준에서 하고, 풀고 나면
+          여기에 체크해 두세요. 난이도 순으로 보여줘요.
         </Text>
 
         <ProgressBar

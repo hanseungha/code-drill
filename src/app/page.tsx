@@ -27,9 +27,9 @@ export default function Home() {
           </HStack>
           <Heading level={1}>문제 전체</Heading>
           <Text color="secondary" textWrap="pretty">
-            <Link href="/curriculum">24주 커리큘럼</Link> 순서로 정렬돼 있습니다.
-            개념부터 익히려면 주차별로 보는 편이 낫습니다. JavaScript와 Python
-            코드는 브라우저 안에서 실행되고 채점됩니다.
+            <Link href="/curriculum">24주 커리큘럼</Link> 순서로 정렬돼 있어요.
+            개념부터 익히려면 주차별로 보는 게 좋아요. JavaScript와 Python
+            코드는 브라우저 안에서 바로 실행하고 채점해요.
           </Text>
         </VStack>
 

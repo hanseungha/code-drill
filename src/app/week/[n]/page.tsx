@@ -34,7 +34,7 @@ export async function generateMetadata({
 }: PageProps<"/week/[n]">): Promise<Metadata> {
   const { n } = await params;
   const week = getWeek(Number(n));
-  if (!week) return { title: "주차를 찾을 수 없습니다" };
+  if (!week) return { title: "주차를 찾을 수 없어요" };
   return {
     title: `${week.week}주차 · ${week.title}`,
     description: week.summary,
@@ -110,7 +110,7 @@ export default async function WeekPage({ params }: PageProps<"/week/[n]">) {
           </Heading>
           {week.isCheckpoint && (
             <Text size="sm" color="secondary" textWrap="pretty">
-              유형을 밝히지 않습니다. 타이머를 걸고 푸세요.
+              유형은 알려주지 않아요. 타이머를 걸고 풀어 보세요.
             </Text>
           )}
           <WeekProblemList rows={rows} />
@@ -123,7 +123,7 @@ export default async function WeekPage({ params }: PageProps<"/week/[n]">) {
           <Heading level={2}>셀프 체크</Heading>
           <Text size="sm" color="secondary" textWrap="pretty">
             다음 주로 넘어가기 전에 소리 내어 답해 보세요. 막히면 그 부분이 아직
-            안 익은 개념입니다.
+            덜 익은 개념이에요.
           </Text>
           {/*
             Markdown rather than List/ListItem, for the same reason ConceptNote

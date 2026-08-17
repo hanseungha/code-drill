@@ -100,7 +100,7 @@ export function ProblemBrowser({
                 onClick={() => {
                   if (
                     window.confirm(
-                      "푼 기록과 저장된 코드를 모두 지웁니다. 계속할까요?",
+                      "푼 기록과 저장한 코드를 모두 지워요. 계속할까요?",
                     )
                   ) {
                     resetProgress();
@@ -168,8 +168,8 @@ export function ProblemBrowser({
 
       {visible.length === 0 ? (
         <EmptyState
-          title="조건에 맞는 문제가 없습니다"
-          description="검색어나 필터를 바꿔보세요."
+          title="조건에 맞는 문제가 없어요"
+          description="검색어나 필터를 바꿔 보세요."
           actions={
             isFiltered ? (
               <Button label="필터 초기화" onClick={clearFilters} />

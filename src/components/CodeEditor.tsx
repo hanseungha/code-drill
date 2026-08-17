@@ -214,7 +214,7 @@ export function CodeEditor({
       onChange={(next) => onChange(next ?? "")}
       beforeMount={beforeMount}
       theme={THEME_NAME}
-      loading={<Text color="disabled">에디터를 불러오는 중…</Text>}
+      loading={<Text color="disabled">에디터를 불러오고 있어요…</Text>}
       options={{
         fontSize: 13.5,
         fontFamily: "var(--font-family-code)",

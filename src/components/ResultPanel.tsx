@@ -17,9 +17,9 @@ import { display, displayArgs } from "@/lib/compare";
 import type { RunOutcome, RunStage, TestResult } from "@/lib/runner";
 
 const STAGE_LABEL: Record<RunStage, string> = {
-  starting: "실행기를 준비하는 중…",
-  "loading-runtime": "Python 런타임을 불러오는 중… (처음 한 번만 걸립니다)",
-  running: "테스트를 실행하는 중…",
+  starting: "실행기를 준비하고 있어요…",
+  "loading-runtime": "Python 런타임을 불러오고 있어요… (처음 한 번만 걸려요)",
+  running: "테스트를 실행하고 있어요…",
 };
 
 export function ResultPanel({
@@ -48,7 +48,7 @@ export function ResultPanel({
         <HStack gap={1.5} align="center" wrap="wrap" justify="center">
           <Text color="secondary">코드를 작성하고</Text>
           <Kbd keys="mod+enter" />
-          <Text color="secondary">를 눌러 예시 테스트를 확인하세요.</Text>
+          <Text color="secondary">를 눌러 예시 테스트를 확인해 보세요.</Text>
         </HStack>
       </Center>
     );
@@ -74,8 +74,8 @@ export function ResultPanel({
           title="시간 초과"
           description={
             outcome.completed === 0
-              ? "테스트 1번에서 제한 시간을 넘겼습니다. 무한 루프가 있는지, 시간 복잡도가 충분히 낮은지 확인하세요."
-              : `테스트 ${outcome.completed}개를 실행한 뒤 ${outcome.completed + 1}번에서 제한 시간을 넘겼습니다. 무한 루프가 있는지, 시간 복잡도가 충분히 낮은지 확인하세요.`
+              ? "테스트 1번에서 제한 시간을 넘겼어요. 무한 루프가 있는지, 시간 복잡도가 충분히 낮은지 확인해 보세요."
+              : `테스트 ${outcome.completed}개를 실행한 뒤 ${outcome.completed + 1}번에서 제한 시간을 넘겼어요. 무한 루프가 있는지, 시간 복잡도가 충분히 낮은지 확인해 보세요.`
           }
           container="card"
         />
@@ -148,7 +148,7 @@ function TestDetail({ result }: { result: TestResult }) {
             <MetadataListItem label="실제값">
               <Text type="code">
                 {result.returnedNothing
-                  ? "반환값 없음 — return 문이 있는지 확인하세요"
+                  ? "반환값이 없어요 — return 문이 있는지 확인해 보세요"
                   : display(result.actual)}
               </Text>
             </MetadataListItem>
