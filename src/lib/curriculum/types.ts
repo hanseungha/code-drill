@@ -17,7 +17,14 @@ export type ConceptBlock =
   | { kind: "list"; items: string[]; ordered?: boolean }
   | { kind: "table"; headers: string[]; rows: string[][] }
   /** Something that silently produces a wrong answer, called out on its own. */
-  | { kind: "trap"; title: string; body: string };
+  | { kind: "trap"; title: string; body: string }
+  /**
+   * A hand-traced run of the algorithm on a tiny input, shown in a monospace
+   * box: dp arrays filling in, a queue draining, pointers sliding. The point a
+   * beginner is missing is almost never the idea — it is watching the state
+   * change one step at a time. `lines` render verbatim, so no backticks/markup.
+   */
+  | { kind: "trace"; caption?: string; lines: string[] };
 
 export interface CodePattern {
   title: string;

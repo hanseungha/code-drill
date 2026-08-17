@@ -1,4 +1,5 @@
 import { Banner } from "@astryxdesign/core/Banner";
+import { CodeBlock } from "@astryxdesign/core/CodeBlock";
 import { VStack } from "@astryxdesign/core/Layout";
 import { Markdown } from "@astryxdesign/core/Markdown";
 import {
@@ -14,8 +15,9 @@ import { RichText } from "@/components/RichText";
 import type { ConceptBlock } from "@/lib/curriculum";
 
 /**
- * Renders a week's lesson. Server-safe: every Table here is data-driven with no
- * renderCell, so none of this has to cross to the client.
+ * Renders a week's lesson. Stays a server component: the Tables are data-driven
+ * with no renderCell, and the one client island (CodeBlock, for `trace` blocks)
+ * is a leaf that hydrates on its own without dragging the lesson across.
  */
 export function ConceptNote({ blocks }: { blocks: ConceptBlock[] }) {
   return (
@@ -52,6 +54,21 @@ function Block({ block }: { block: ConceptBlock }) {
 
   if (block.kind === "table") {
     return <ConceptTable headers={block.headers} rows={block.rows} />;
+  }
+
+  if (block.kind === "trace") {
+    // A worked run, not code to reuse: plaintext so nothing is syntax-coloured,
+    // no copy button, no line numbers. The caption (if any) labels the box.
+    return (
+      <CodeBlock
+        code={block.lines.join("\n")}
+        language="plaintext"
+        title={block.caption}
+        hasCopyButton={false}
+        size="sm"
+        width="100%"
+      />
+    );
   }
 
   // Trap titles name the API that misbehaves, so they carry backticks too.
