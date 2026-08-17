@@ -6,7 +6,7 @@ import type { Language } from "./types";
 const SOLVED_KEY = "code-drill:solved";
 const CODE_KEY = "code-drill:code";
 const LANG_KEY = "code-drill:language";
-const BAEKJOON_KEY = "code-drill:baekjoon";
+const PROGRAMMERS_KEY = "code-drill:programmers";
 
 const listeners = new Set<() => void>();
 
@@ -83,44 +83,44 @@ export function resetProgress() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(SOLVED_KEY);
   window.localStorage.removeItem(CODE_KEY);
-  window.localStorage.removeItem(BAEKJOON_KEY);
+  window.localStorage.removeItem(PROGRAMMERS_KEY);
   emit();
 }
 
-/* --------------------------------- baekjoon -------------------------------- */
+/* ------------------------------- programmers ------------------------------- */
 
 /**
- * Baekjoon problems are solved on acmicpc.net, so nothing here can be inferred
- * — this is a manual checklist, kept apart from `solved` because those slugs
- * are graded by this site and these numbers never are.
+ * Programmers problems are solved on programmers.co.kr, so nothing here can be
+ * inferred — this is a manual checklist, kept apart from `solved` because those
+ * slugs are graded by this site and these numbers never are.
  */
 const NO_IDS: number[] = [];
-let baekjoonCache: number[] = NO_IDS;
-let baekjoonRaw: string | null = null;
+let programmersCache: number[] = NO_IDS;
+let programmersRaw: string | null = null;
 
-function getBaekjoonSnapshot(): number[] {
+function getProgrammersSnapshot(): number[] {
   if (typeof window === "undefined") return NO_IDS;
-  const raw = window.localStorage.getItem(BAEKJOON_KEY);
-  if (raw !== baekjoonRaw) {
-    baekjoonRaw = raw;
+  const raw = window.localStorage.getItem(PROGRAMMERS_KEY);
+  if (raw !== programmersRaw) {
+    programmersRaw = raw;
     try {
       const parsed = raw === null ? [] : JSON.parse(raw);
-      baekjoonCache = Array.isArray(parsed) ? parsed : [];
+      programmersCache = Array.isArray(parsed) ? parsed : [];
     } catch {
-      baekjoonCache = [];
+      programmersCache = [];
     }
   }
-  return baekjoonCache;
+  return programmersCache;
 }
 
-export function useSolvedBaekjoon(): number[] {
-  return useSyncExternalStore(subscribe, getBaekjoonSnapshot, () => NO_IDS);
+export function useSolvedProgrammers(): number[] {
+  return useSyncExternalStore(subscribe, getProgrammersSnapshot, () => NO_IDS);
 }
 
-export function toggleBaekjoon(id: number) {
-  const current = read<number[]>(BAEKJOON_KEY, []);
+export function toggleProgrammers(id: number) {
+  const current = read<number[]>(PROGRAMMERS_KEY, []);
   write(
-    BAEKJOON_KEY,
+    PROGRAMMERS_KEY,
     current.includes(id) ? current.filter((n) => n !== id) : [...current, id],
   );
 }
