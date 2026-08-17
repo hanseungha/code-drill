@@ -28,6 +28,9 @@ export function SiteHeader() {
           <Link href="/curriculum" isStandalone>
             커리큘럼
           </Link>
+          <Link href="/patterns" isStandalone>
+            유형
+          </Link>
           <Link href="/" isStandalone>
             문제
           </Link>
