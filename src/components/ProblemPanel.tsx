@@ -1,5 +1,6 @@
 "use client";
 
+import { Card } from "@astryxdesign/core/Card";
 import { CodeBlock } from "@astryxdesign/core/CodeBlock";
 import { Collapsible } from "@astryxdesign/core/Collapsible";
 import { Divider } from "@astryxdesign/core/Divider";
@@ -63,23 +64,30 @@ export function ProblemPanel({
       <VStack gap={3}>
         <Heading level={2}>예시</Heading>
         {problem.examples.map((example, i) => (
-          <MetadataList key={i} label={{ position: "start", width: 56 }}>
-            <MetadataListItem label="입력">
-              <Text type="code">{example.input}</Text>
-            </MetadataListItem>
-            <MetadataListItem label="출력">
-              <Text type="code" color="accent">
-                {example.output}
-              </Text>
-            </MetadataListItem>
-            {example.explain && (
-              <MetadataListItem label="설명">
-                <Text type="supporting">
-                  <RichText text={example.explain} />
-                </Text>
-              </MetadataListItem>
-            )}
-          </MetadataList>
+          <Card key={i} variant="muted" padding={4}>
+            <VStack gap={2}>
+              {problem.examples.length > 1 && (
+                <Text type="label">예시 {i + 1}</Text>
+              )}
+              <MetadataList label={{ position: "start", width: 56 }}>
+                <MetadataListItem label="입력">
+                  <Text type="code">{example.input}</Text>
+                </MetadataListItem>
+                <MetadataListItem label="출력">
+                  <Text type="code" color="accent">
+                    {example.output}
+                  </Text>
+                </MetadataListItem>
+                {example.explain && (
+                  <MetadataListItem label="설명">
+                    <Text type="supporting">
+                      <RichText text={example.explain} />
+                    </Text>
+                  </MetadataListItem>
+                )}
+              </MetadataList>
+            </VStack>
+          </Card>
         ))}
       </VStack>
 
